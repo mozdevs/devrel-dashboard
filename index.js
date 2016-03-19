@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import localforage from 'localforage';
 import moment from 'moment';
+import { Table } from 'reactabular';
 
 /* -------------------------------------------------------------------------- */
 
@@ -10,8 +11,7 @@ const FilterableBugList = React.createClass({
   getInitialState: function() {
     return {
       bugs: [],
-      openOnly: true,
-      splitByProduct: true,
+      openOnly: true
     }
   },
 
@@ -55,39 +55,18 @@ const FilterableBugList = React.createClass({
     .then(data => setState(data))
   },
 
-  handleUserInput: function(openOnly, splitByProduct) {
-    this.setState(Object.assign({}, this.state, { openOnly, splitByProduct }));
+  handleUserInput: function(openOnly) {
+    this.setState(Object.assign({}, this.state, { openOnly }));
   },
 
   render: function() {
-    let bugLists;
-
-    if (this.state.splitByProduct) {
-      let products = new Set(this.state.bugs.map(bug => bug.product));
-
-      bugLists = [];
-      for (let product of products) {
-        let bugs = this.state.bugs.filter(bug => bug.product === product);
-        bugLists.push(<BugList openOnly={this.state.openOnly} bugs={bugs} product={product} key={product} />);
-      }
-    } else {
-      bugLists = <BugList
-        openOnly={this.state.openOnly}
-        bugs={this.state.bugs}
-        product='All Products'
-        key='All Products'
-        displayProduct='true'
-      />
-    }
-
     return (
       <div>
         <FilterBar
           openOnly={this.state.openOnly}
-          splitByProduct={this.state.splitByProduct}
           onUserInput={this.handleUserInput}
         />
-        {bugLists}
+        <BugTable openOnly={this.state.openOnly} bugs={this.state.bugs} />
       </div>
     );
   }
@@ -95,91 +74,51 @@ const FilterableBugList = React.createClass({
 
 const FilterBar = React.createClass({
   handleChange: function() {
-    this.props.onUserInput(this.refs.openOnlyInput.checked, this.refs.splitByProduct.checked);
+    this.props.onUserInput(this.refs.openOnlyInput.checked);
   },
   render: function() {
     return (
       <form>
         <label>
-          <input
-            type='checkbox'
-            checked={this.props.openOnly}
-            onChange={this.handleChange}
-            ref='openOnlyInput'
-          />
+          <input type='checkbox' checked={this.props.openOnly} onChange={this.handleChange} ref='openOnlyInput' />
           {' '}
           Only show open bugs
-        </label>
-
-        <label>
-          <input
-            type='checkbox'
-            checked={this.props.splitByProduct}
-            onChange={this.handleChange}
-            ref='splitByProduct'
-          />
-          {' '}
-          Split results by product
         </label>
       </form>
     );
   }
 });
 
-const BugList = React.createClass({
+const BugTable = React.createClass({
   render: function() {
-    let rows = this.props.bugs
-      .filter(bug => (!this.props.openOnly || bug.is_open))
-      .map(bug => <BugRow bug={bug} key={bug.id} displayProduct={this.props.displayProduct} />);
+    // TODO: Implement overall header
+    // TODO: Implement total / open counts
 
-    let totalBugCount = this.props.bugs.length;
-    let openBugCount = this.props.bugs.filter(bug => bug.is_open).length;
+    let columns = [
+      { property: 'id', header: 'ID', cell: (id) => (
+          <a href={`https://bugzilla.mozilla.org/show_bug.cgi?id=${id}`} target="_blank">{id}</a>
+      )},
+      { property: 'summary', header: 'Summary' },
+      { property: 'status', header: 'Status' },
+      { property: 'resolution', header: 'Resolution' },
+      { property: 'product', header: 'Product' },
+      { property: 'component', header: 'Component' },
+      { property: 'creation_time', header: 'Age', cell: (date) => ({
+          value: moment(date).fromNow(true),
+          props: { "data-unix": moment(date).unix() }
+      })},
+    ];
 
-    // Bail if nothing to show
-    if (rows.length === 0) {
-      return null;
+    let row = (row) => ({ "data-open": row.is_open });
+
+    let bugs = this.props.bugs;
+    if (this.props.openOnly) {
+      bugs = bugs.filter(bug => bug.is_open);
     }
 
-    return (
-      <div>
-        <h2>{this.props.product} (Open: {openBugCount} / {totalBugCount})</h2>
-        <table>
-          <thead>
-            <tr>
-              <td>ID</td>
-              <td>Summary</td>
-              <td>Status</td>
-              <td>Resolution</td>
-              <td style={{ display: this.props.displayProduct ? 'inherit' : 'none' }}>Product</td>
-              <td>Component</td>
-              <td>Created</td>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </table>
-      </div>
-    );
+    return <Table columns={columns} row={row} data={bugs} />;
   }
 });
-
-const BugRow = React.createClass({
-  render: function() {
-    let age = moment(this.props.bug.creation_time);
-    return (
-      <tr>
-        <td><a href={"https://bugzilla.mozilla.org/show_bug.cgi?id=" + this.props.bug.id} target="_blank">{this.props.bug.id}</a></td>
-        <td>{this.props.bug.summary}</td>
-        <td>{this.props.bug.status}</td>
-        <td>{this.props.bug.resolution}</td>
-        <td style={{ display: this.props.displayProduct ? 'inherit' : 'none' }}>{this.props.bug.product}</td>
-        <td>{this.props.bug.component}</td>
-        <td data-unixtime={age.unix()}>{age.fromNow(true)}</td>
-      </tr>
-    );
-  }
-})
 
 /* -------------------------------------------------------------------------- */
 
