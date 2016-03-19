@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import localforage from 'localforage';
 import moment from 'moment';
 
 /* -------------------------------------------------------------------------- */
@@ -23,24 +24,34 @@ const FilterableBugList = React.createClass({
 
     let setState = (newState) => this.setState(Object.assign({}, this.state, { bugs: newState.bugs }));
 
-    if ('caches' in window) {
-      caches.open('bzcache')
-      .then(cache => cache.match(bz_url))
-      .then(result => { return result ? result.json() : undefined })
-      .then(json => json ? setState(json) : undefined)
-
-      // Promise.all([caches.open('bzcache'), fetch(bz_url)])
-      // .then(([cache, result]) => {
-      //   cache.put(bz_url, result.clone());
-      //   return result.json();
-      // })
-      // .then(json => setState(json))
-      // .then(() => console.log("Done with fetch"))
-    } else {
-      fetch(bz_url)
-      .then(result => result.json())
-      .then(json => setState(json))
+    function fetchAndStore(url) {
+      return fetch(url)
+             .then(response => response.json())
+             .then(json => Promise.all([
+               localforage.setItem('data', json),
+               localforage.setItem('time', Date.now())
+             ]))
+             .then(([data, time]) => data)
     }
+
+    Promise.all([localforage.getItem('data'), localforage.getItem('time')])
+    .then(([data, time]) => {
+      let age = Date.now() - time;
+      let day = 24 * 60 * 60 * 1000;
+
+      if (!data) {
+        console.info("No cached data, fetching...");
+        return fetchAndStore(bz_url);
+      } else if (age >= day) {
+        console.info("Displaying stale cached data, fetching fresh data...");
+        setState(data);
+        return fetchAndStore(bz_url);
+      } else {
+        console.info("Displaying fresh cached data, not fetching.");
+        return data;
+      }
+    })
+    .then(data => setState(data))
   },
 
   handleUserInput: function(openOnly) {
