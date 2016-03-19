@@ -14,9 +14,34 @@ const FilterableBugList = React.createClass({
   },
 
   componentDidMount: function() {
-    fetch('/DATA_SNAPSHOT.json')
-    .then(res => res.json())
-    .then(data => this.setState(Object.assign({}, this.state, { bugs: data.bugs })));
+    let bz_api = 'https://bugzilla.mozilla.org/rest';
+    let bz_fields = ['id', 'summary', 'status', 'resolution', 'is_open',
+                     'dupe_of', 'keywords', 'whiteboard', 'product',
+                     'component', 'creator', 'creator_detail', 'creation_time',
+                     'last_change_time'];
+    let bz_url = bz_api + '/bug?keywords=DevAdvocacy&include_fields=' + bz_fields.join(',');
+
+    let setState = (newState) => this.setState(Object.assign({}, this.state, { bugs: newState.bugs }));
+
+    if ('caches' in window) {
+      caches.open('bzcache')
+      .then(cache => cache.match(bz_url))
+      .then(result => { return result ? result.json() : undefined })
+      .then(json => json ? setState(json) : undefined)
+      .then(() => console.log("Done with cache"))
+
+      Promise.all([caches.open('bzcache'), fetch(bz_url)])
+      .then(([cache, result]) => {
+        cache.put(bz_url, result.clone());
+        return result.json();
+      })
+      .then(json => setState(json))
+      .then(() => console.log("Done with fetch"))
+    } else {
+      fetch(bz_url)
+      .then(result => result.json())
+      .then(json => setState(json))
+    }
   },
 
   handleUserInput: function(openOnly) {
@@ -57,7 +82,7 @@ const BugList = React.createClass({
   render: function() {
     let rows = this.props.bugs
       .filter(bug => (!this.props.openOnly || bug.is_open))
-      .map(bug => <BugRow bug={bug} />);
+      .map(bug => <BugRow bug={bug} key={bug.id} />);
 
     return (
       <div>
