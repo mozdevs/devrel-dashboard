@@ -11,6 +11,7 @@ const FilterableBugList = React.createClass({
     return {
       bugs: [],
       openOnly: true,
+      splitByProduct: true,
     }
   },
 
@@ -54,21 +55,38 @@ const FilterableBugList = React.createClass({
     .then(data => setState(data))
   },
 
-  handleUserInput: function(openOnly) {
-    this.setState(Object.assign({}, this.state, { openOnly: openOnly }));
+  handleUserInput: function(openOnly, splitByProduct) {
+    this.setState(Object.assign({}, this.state, { openOnly, splitByProduct }));
   },
 
   render: function() {
-    let products = new Set(this.state.bugs.map(bug => bug.product));
-    let bugLists = [];
-    for (let product of products) {
-      let bugs = this.state.bugs.filter(bug => bug.product === product);
-      bugLists.push(<BugList openOnly={this.state.openOnly} bugs={bugs} product={product} key={product} />);
+    let bugLists;
+
+    if (this.state.splitByProduct) {
+      let products = new Set(this.state.bugs.map(bug => bug.product));
+
+      bugLists = [];
+      for (let product of products) {
+        let bugs = this.state.bugs.filter(bug => bug.product === product);
+        bugLists.push(<BugList openOnly={this.state.openOnly} bugs={bugs} product={product} key={product} />);
+      }
+    } else {
+      bugLists = <BugList
+        openOnly={this.state.openOnly}
+        bugs={this.state.bugs}
+        product='All Products'
+        key='All Products'
+        displayProduct='true'
+      />
     }
 
     return (
       <div>
-        <FilterBar openOnly={this.state.openOnly} onUserInput={this.handleUserInput} />
+        <FilterBar
+          openOnly={this.state.openOnly}
+          splitByProduct={this.state.splitByProduct}
+          onUserInput={this.handleUserInput}
+        />
         {bugLists}
       </div>
     );
@@ -77,20 +95,33 @@ const FilterableBugList = React.createClass({
 
 const FilterBar = React.createClass({
   handleChange: function() {
-    this.props.onUserInput(this.refs.openOnlyInput.checked);
+    this.props.onUserInput(this.refs.openOnlyInput.checked, this.refs.splitByProduct.checked);
   },
   render: function() {
     return (
       <form>
-        <input
-          type='checkbox'
-          checked={this.props.openOnly}
-          onChange={this.handleChange}
-          ref='openOnlyInput'
-        />
-        {' '}
-        Only show open bugs
-        </form>
+        <label>
+          <input
+            type='checkbox'
+            checked={this.props.openOnly}
+            onChange={this.handleChange}
+            ref='openOnlyInput'
+          />
+          {' '}
+          Only show open bugs
+        </label>
+
+        <label>
+          <input
+            type='checkbox'
+            checked={this.props.splitByProduct}
+            onChange={this.handleChange}
+            ref='splitByProduct'
+          />
+          {' '}
+          Split results by product
+        </label>
+      </form>
     );
   }
 });
@@ -99,7 +130,7 @@ const BugList = React.createClass({
   render: function() {
     let rows = this.props.bugs
       .filter(bug => (!this.props.openOnly || bug.is_open))
-      .map(bug => <BugRow bug={bug} key={bug.id} />);
+      .map(bug => <BugRow bug={bug} key={bug.id} displayProduct={this.props.displayProduct} />);
 
     let totalBugCount = this.props.bugs.length;
     let openBugCount = this.props.bugs.filter(bug => bug.is_open).length;
@@ -119,6 +150,7 @@ const BugList = React.createClass({
               <td>Summary</td>
               <td>Status</td>
               <td>Resolution</td>
+              <td style={{ display: this.props.displayProduct ? 'inherit' : 'none' }}>Product</td>
               <td>Component</td>
               <td>Created</td>
             </tr>
@@ -141,6 +173,7 @@ const BugRow = React.createClass({
         <td>{this.props.bug.summary}</td>
         <td>{this.props.bug.status}</td>
         <td>{this.props.bug.resolution}</td>
+        <td style={{ display: this.props.displayProduct ? 'inherit' : 'none' }}>{this.props.bug.product}</td>
         <td>{this.props.bug.component}</td>
         <td data-unixtime={age.unix()}>{age.fromNow(true)}</td>
       </tr>
