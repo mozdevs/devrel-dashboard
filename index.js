@@ -9,7 +9,7 @@ const FilterableBugList = React.createClass({
   getInitialState: function() {
     return {
       bugs: [],
-      openOnly: false
+      openOnly: true,
     }
   },
 
@@ -28,15 +28,14 @@ const FilterableBugList = React.createClass({
       .then(cache => cache.match(bz_url))
       .then(result => { return result ? result.json() : undefined })
       .then(json => json ? setState(json) : undefined)
-      .then(() => console.log("Done with cache"))
 
-      Promise.all([caches.open('bzcache'), fetch(bz_url)])
-      .then(([cache, result]) => {
-        cache.put(bz_url, result.clone());
-        return result.json();
-      })
-      .then(json => setState(json))
-      .then(() => console.log("Done with fetch"))
+      // Promise.all([caches.open('bzcache'), fetch(bz_url)])
+      // .then(([cache, result]) => {
+      //   cache.put(bz_url, result.clone());
+      //   return result.json();
+      // })
+      // .then(json => setState(json))
+      // .then(() => console.log("Done with fetch"))
     } else {
       fetch(bz_url)
       .then(result => result.json())
@@ -45,14 +44,21 @@ const FilterableBugList = React.createClass({
   },
 
   handleUserInput: function(openOnly) {
-    this.setState({ openOnly: openOnly });
+    this.setState(Object.assign({}, this.state, { openOnly: openOnly }));
   },
 
   render: function() {
+    let products = new Set(this.state.bugs.map(bug => bug.product));
+    let bugLists = [];
+    for (let product of products) {
+      let bugs = this.state.bugs.filter(bug => bug.product === product);
+      bugLists.push(<BugList openOnly={this.state.openOnly} bugs={bugs} product={product} key={product} />);
+    }
+
     return (
       <div>
         <FilterBar openOnly={this.state.openOnly} onUserInput={this.handleUserInput} />
-        <BugList openOnly={this.state.openOnly} bugs={this.state.bugs} />
+        {bugLists}
       </div>
     );
   }
@@ -84,9 +90,17 @@ const BugList = React.createClass({
       .filter(bug => (!this.props.openOnly || bug.is_open))
       .map(bug => <BugRow bug={bug} key={bug.id} />);
 
+    let totalBugCount = this.props.bugs.length;
+    let openBugCount = this.props.bugs.filter(bug => bug.is_open).length;
+
+    // Bail if nothing to show
+    if (rows.length === 0) {
+      return null;
+    }
+
     return (
       <div>
-        <h2>Displaying {rows.length} Bugs</h2>
+        <h2>{this.props.product} (Open: {openBugCount} / {totalBugCount})</h2>
         <table>
           <thead>
             <tr>
@@ -94,7 +108,6 @@ const BugList = React.createClass({
               <td>Summary</td>
               <td>Status</td>
               <td>Resolution</td>
-              <td>Product</td>
               <td>Component</td>
               <td>Created</td>
             </tr>
@@ -117,7 +130,6 @@ const BugRow = React.createClass({
         <td>{this.props.bug.summary}</td>
         <td>{this.props.bug.status}</td>
         <td>{this.props.bug.resolution}</td>
-        <td>{this.props.bug.product}</td>
         <td>{this.props.bug.component}</td>
         <td data-unixtime={age.unix()}>{age.fromNow(true)}</td>
       </tr>
