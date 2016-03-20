@@ -45,3 +45,5 @@ th.sort-desc::after { content: "▲"; /*! vertical-align: text-top; */}
 *, tr, td { box-sizing: border-box; }
 
 tr[data-open=false] { background-color: #eee; }
+
+th:last-child { width: 7em; }
