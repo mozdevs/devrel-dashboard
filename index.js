@@ -4,7 +4,8 @@ import ReactDOM from 'react-dom';
 import localforage from 'localforage';
 import moment from 'moment';
 import { Table, sortColumn } from 'reactabular';
-import { orderBy } from 'lodash';
+
+import orderBy from 'lodash/orderBy';
 
 /* -------------------------------------------------------------------------- */
 

@@ -1,15 +1,18 @@
 const path = require('path');
+const webpack = require('webpack');
 
 module.exports = {
-  devtool: '#cheap-module-eval-source-map',
   entry: [
     './index',
   ],
   output: {
     path: path.join(__dirname, 'dist'),
-    publicPath: "./dist/",
+    publicPath: "dist/",
     filename: 'bundle.js',
   },
+  plugins: [
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+  ],
   module: {
     loaders: [
       {
