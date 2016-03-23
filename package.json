@@ -13,6 +13,7 @@
   "bugs": "https://github.com/mozdevs/devrel-dashboard/issues",
   "homepage": "https://mozdevs.github.io/devrel-dashboard",
   "dependencies": {
+    "immutable": "^3.7.6",
     "isomorphic-fetch": "^2.2.1",
     "localforage": "^1.4.0",
     "lodash": "^4.6.1",

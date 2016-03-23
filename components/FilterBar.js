@@ -1,20 +1,17 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
-const FilterBar = React.createClass({
-  handleChange: function() {
-    this.props.onUserInput(this.refs.openOnlyInput.checked);
-  },
-  render: function() {
-    return (
-      <form>
-        <label>
-          <input type='checkbox' checked={this.props.openOnly} onChange={this.handleChange} ref='openOnlyInput' />
-          {' '}
-          Only show open bugs
-        </label>
-      </form>
-    );
-  }
-});
+const FilterBar = (props) => (
+  <form>
+    <label>
+      <input type='checkbox' checked={props.checked} onChange={props.onChange} />
+      { ' ' }
+      Show closed bugs
+    </label>
+  </form>
+);
 
-export default FilterBar;
+const mapStateToProps = (state) => ({ checked: state.get('showClosed') });
+const mapDispatchToProps = (dispatch) => ({ onChange: () => dispatch({ type: 'TOGGLE_SHOW_CLOSED' }) });
+
+export default connect(mapStateToProps, mapDispatchToProps)(FilterBar);

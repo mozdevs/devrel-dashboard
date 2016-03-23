@@ -9,7 +9,6 @@ const App = React.createClass({
   getInitialState: function() {
     return {
       bugs: [],
-      openOnly: true
     }
   },
 
@@ -53,18 +52,11 @@ const App = React.createClass({
     .then(data => setState(data))
   },
 
-  handleUserInput: function(openOnly) {
-    this.setState(Object.assign({}, this.state, { openOnly }));
-  },
-
   render: function() {
     return (
       <div>
-        <FilterBar
-          openOnly={this.state.openOnly}
-          onUserInput={this.handleUserInput}
-        />
-        <BugList openOnly={this.state.openOnly} bugs={this.state.bugs} />
+        <FilterBar />
+        <BugList bugs={this.state.bugs} />
       </div>
     );
   }
