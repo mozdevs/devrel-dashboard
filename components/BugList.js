@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import orderBy from 'lodash/orderBy';
 import { Table } from 'reactabular';
+import Immutable from 'immutable';
 
 const BugList = (props) => {
   let columns = [
@@ -48,7 +49,16 @@ const BugList = (props) => {
   )
 };
 
+BugList.propTypes = {
+  bugs: PropTypes.array.isRequired,
+  showClosed: PropTypes.bool.isRequired,
+  sortCol: PropTypes.string.isRequired,
+  sortDir: PropTypes.string.isRequired,
+  toggleSort: PropTypes.func.isRequired,
+}
+
 const mapStateToProps = (state) => ({
+  bugs: state.getIn(['data', 'bugs']).toJS(),
   showClosed: state.get('showClosed'),
   sortCol: state.getIn(['sort', 'column']),
   sortDir: state.getIn(['sort', 'direction']),

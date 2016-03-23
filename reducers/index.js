@@ -5,7 +5,13 @@ const initialState = Immutable.fromJS({
   sort: {
     column: 'id',
     direction: 'asc',
-  }
+  },
+  network: {
+    status: 'INIT',
+  },
+  data: {
+    bugs: [],
+  },
 });
 
 const reducer = (state = initialState, action) => {
@@ -21,6 +27,12 @@ const reducer = (state = initialState, action) => {
       } else {
         return state.set('sort', Immutable.Map({ column: action.column, direction: 'desc' }));
       }
+
+    case 'UPDATE_NETWORK_STATUS':
+      return state.setIn(['network', 'status'], action.status);
+
+    case 'REPLACE_BUG_DATA':
+      return state.setIn(['data', 'bugs'], Immutable.fromJS(action.data.bugs));
 
     default:
       return state;

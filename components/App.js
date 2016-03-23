@@ -1,18 +1,17 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import fetch from 'isomorphic-fetch';
 import localforage from 'localforage';
 
-import FilterBar from './FilterBar';
+import PageHeader from './PageHeader';
 import BugList from './BugList';
 
-const App = React.createClass({
-  getInitialState: function() {
-    return {
-      bugs: [],
-    }
-  },
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     let bz_api = 'https://bugzilla.mozilla.org/rest';
     let bz_fields = ['id', 'summary', 'status', 'resolution', 'is_open',
                      'dupe_of', 'keywords', 'whiteboard', 'product',
@@ -20,9 +19,8 @@ const App = React.createClass({
                      'last_change_time'];
     let bz_url = bz_api + '/bug?keywords=DevAdvocacy&include_fields=' + bz_fields.join(',');
 
-    let setState = (newState) => this.setState(Object.assign({}, this.state, { bugs: newState.bugs }));
-
-    function fetchAndStore(url) {
+    const fetchAndStore = (url) => {
+      this.props.dispatch({ type: 'UPDATE_NETWORK_STATUS', status: 'LOAD_NETWORK' });
       return fetch(url)
              .then(response => response.json())
              .then(json => Promise.all([
@@ -30,36 +28,42 @@ const App = React.createClass({
                localforage.setItem('time', Date.now())
              ]))
              .then(([data, time]) => data)
-    }
+    };
 
-    Promise.all([localforage.getItem('data'), localforage.getItem('time')])
+    Promise.resolve()
+    .then(() => this.props.dispatch({ type: 'UPDATE_NETWORK_STATUS', status: 'LOAD_CACHE' }))
+    .then(() => Promise.all([localforage.getItem('data'), localforage.getItem('time')]))
     .then(([data, time]) => {
       let age = Date.now() - time;
       let day = 24 * 60 * 60 * 1000;
 
       if (!data) {
-        console.info("No cached data, fetching...");
         return fetchAndStore(bz_url);
       } else if (age >= day) {
-        console.info("Displaying stale cached data, fetching fresh data...");
-        setState(data);
+        this.props.dispatch({ type: 'REPLACE_BUG_DATA', data })
         return fetchAndStore(bz_url);
       } else {
-        console.info("Displaying fresh cached data, not fetching.");
         return data;
       }
     })
-    .then(data => setState(data))
-  },
+    .then(data => this.props.dispatch({ type: 'REPLACE_BUG_DATA', data }))
+    .then(() => this.props.dispatch({ type: 'UPDATE_NETWORK_STATUS', status: 'IDLE' }));
+  }
 
-  render: function() {
+  render() {
     return (
       <div>
-        <FilterBar />
-        <BugList bugs={this.state.bugs} />
+        <PageHeader />
+        <BugList />
       </div>
     );
   }
+}
+
+const mapStateToProps = (state) => ({
+  bugs: state.getIn(['data', 'bugs'])
 });
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({ dispatch });
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
