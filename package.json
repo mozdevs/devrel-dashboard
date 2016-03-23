@@ -2,20 +2,26 @@
   "name": "devrel-dashboard",
   "version": "0.0.1",
   "scripts": {
-    "start": "webpack-dev-server -d",
+    "start": "webpack-dev-server -d --hot",
     "build": "webpack -p --progress",
     "size": "webpack -p --json | webpack-bundle-size-analyzer",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dan Callahan <dan.callahan@gmail.com>",
   "license": "ISC",
+  "repository": "mozdevs/devrel-dashboard",
+  "bugs": "https://github.com/mozdevs/devrel-dashboard/issues",
+  "homepage": "https://mozdevs.github.io/devrel-dashboard",
   "dependencies": {
+    "isomorphic-fetch": "^2.2.1",
     "localforage": "^1.4.0",
     "lodash": "^4.6.1",
     "moment": "^2.12.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
-    "reactabular": "callahad/reactabular#avoid-full-lodash"
+    "react-redux": "^4.4.1",
+    "reactabular": "^0.12.0",
+    "redux": "^3.3.1"
   },
   "devDependencies": {
     "babel-core": "^6.7.2",
