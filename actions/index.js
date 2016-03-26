@@ -38,8 +38,10 @@ export const receiveBugs = (json) => {
 export const fetchBugs = () => {
   return (dispatch) => {
     let bz_base = 'https://bugzilla.mozilla.org/rest/bug';
-    let bz_fields = ['id', 'summary', 'status', 'resolution', 'is_open', 'dupe_of',
-                     'product', 'component', 'creator', 'creation_time'];
+    let bz_fields = [
+      'id', 'summary', 'status', 'resolution', 'is_open', 'dupe_of',
+      'product', 'component', 'creator', 'creation_time', 'whiteboard',
+    ];
 
     dispatch(requestBugs());
     return fetch(bz_base + '?keywords=DevAdvocacy&include_fields=' + bz_fields.join(','))
