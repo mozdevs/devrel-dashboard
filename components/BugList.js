@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import orderBy from 'lodash/orderBy';
 import { Table } from 'reactabular';
 import Immutable from 'immutable';
+import { createSelector } from 'reselect';
+import { sortColumn } from '../actions';
 
 const BugList = (props) => {
   let columns = [
@@ -16,7 +17,8 @@ const BugList = (props) => {
     { property: 'product', header: 'Product' },
     { property: 'component', header: 'Component' },
     { property: 'creation_time', header: 'Age',
-        cell: (date) => moment(date).fromNow(true) }
+        cell: (date) => moment(date).fromNow(true)
+    }
   ];
 
   columns.forEach((col) => {
@@ -25,47 +27,67 @@ const BugList = (props) => {
     }
   });
 
+  let row = (row) => ({ "data-open": row.get('is_open') });
+
   let columnNames = {
     onClick: (column) => props.toggleSort(column)
   }
 
-  let row = (row) => ({ "data-open": row.is_open });
-
-  let bugs = props.bugs;
-  if (!props.showClosed) {
-    bugs = bugs.filter(bug => bug.is_open);
+  let body;
+  if (props.bugList.count() === 0) {
+    body = <p><em>No open bugs in this product.</em></p>;
+  } else {
+    body = <Table columns={columns} row={row} data={props.bugList} columnNames={columnNames} />
   }
-
-  let totalBugs = props.bugs.length;
-  let openBugs = props.bugs.filter(bug => bug.is_open).length;
-
-  let data = orderBy(bugs, [props.sortCol], [props.sortDir]);
 
   return (
     <div>
-      <h1>DevAdvocacy Bugs (Open: {openBugs} / {totalBugs})</h1>
-      <Table columns={columns} row={row} data={data} columnNames={columnNames} />
+      <h1>DevAdvocacy Bugs</h1>
+      {body}
     </div>
-  )
-};
+  );
+}
 
 BugList.propTypes = {
-  bugs: PropTypes.array.isRequired,
-  showClosed: PropTypes.bool.isRequired,
-  sortCol: PropTypes.string.isRequired,
-  sortDir: PropTypes.string.isRequired,
+  bugList: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.instanceOf(Immutable.Iterable),
+  ]).isRequired,
   toggleSort: PropTypes.func.isRequired,
+  sortDir: PropTypes.string.isRequired,
+  sortCol: PropTypes.string.isRequired,
 }
 
 const mapStateToProps = (state) => ({
-  bugs: state.getIn(['data', 'bugs']).toJS(),
-  showClosed: state.get('showClosed'),
-  sortCol: state.getIn(['sort', 'column']),
-  sortDir: state.getIn(['sort', 'direction']),
+  bugList: createSelector([
+      (state) => state.get('bugs'),
+      (state) => state.getIn(['meta', 'showClosed']),
+      (state) => state.getIn(['meta', 'sortColumn']),
+      (state) => state.getIn(['meta', 'sortDirection']),
+      (state) => state.getIn(['meta', 'product']),
+    ], (bugs, showClosed, sortColumn, sortDirection, product) => {
+      bugs = bugs.sortBy(x => x.get(sortColumn));
+
+      if (product) {
+        bugs = bugs.filter(bug => bug.get('product') === product);
+      }
+
+      if (!showClosed) {
+        bugs = bugs.filter(bug => bug.get('is_open'));
+      }
+
+      if (sortDirection === 'desc') {
+        bugs = bugs.reverse();
+      }
+
+      return bugs.valueSeq();
+    })(state),
+  sortCol: state.getIn(['meta', 'sortColumn']),
+  sortDir: state.getIn(['meta', 'sortDirection']),
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  toggleSort: (column) => dispatch({ type: 'TOGGLE_SORT_COLUMN', column: column.property })
+  toggleSort: (column) => dispatch(sortColumn(column.property))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(BugList);

@@ -2,28 +2,19 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 const NetworkStatus = (props) => {
-  switch (props.status) {
-    case 'INIT':
-      return <span>Initializing...</span>;
-    case 'LOAD_CACHE':
-      return <span>Loading data from cache...</span>;
-    case 'LOAD_NETWORK':
-      return <span>Loading data from Bugzilla...</span>;
-    case 'IDLE':
-      return <span>Network idle.</span>;
-    case 'ERROR':
-      return <span>Error fetching.</span>;
-    default:
-      return <span>Unhandled network state, please refresh the page.</span>;
+  if (props.fetching) {
+    return <p><em>Fetching data from Bugzilla...</em></p>;
+  } else {
+    return <p></p>;
   }
 };
 
 NetworkStatus.propTypes = {
-  status: PropTypes.string.isRequired,
+  fetching: PropTypes.bool.isRequired,
 }
 
 const mapStateToProps = (state) => ({
-  status: state.getIn(['network', 'status']),
+  fetching: state.getIn(['meta', 'isFetching']),
 });
 
 const mapDispatchToProps = (dispatch) => ({

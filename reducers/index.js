@@ -1,42 +1,60 @@
 import Immutable from 'immutable';
+import { combineReducers } from 'redux-immutable';
 
-const initialState = Immutable.fromJS({
+import {
+  SELECT_PRODUCT, TOGGLE_CLOSED, SORT_COLUMN,
+  EXPIRE_BUGS, REQUEST_BUGS, RECEIVE_BUGS,
+} from '../actions';
+
+const meta = (state = Immutable.fromJS({
+  isFetching: false,
   showClosed: false,
-  sort: {
-    column: 'id',
-    direction: 'asc',
-  },
-  network: {
-    status: 'INIT',
-  },
-  data: {
-    bugs: [],
-  },
-});
-
-const reducer = (state = initialState, action) => {
+  sortColumn: 'id',
+  sortDirection: 'asc',
+}), action) => {
   switch (action.type) {
-    case 'TOGGLE_SHOW_CLOSED':
-      return state.set('showClosed', !state.get('showClosed'));
-
-    case 'TOGGLE_SORT_COLUMN':
-      let curCol = state.getIn(['sort', 'column']);
-      let curDir = state.getIn(['sort', 'direction']);
-      if (action.column == curCol) {
-        return state.setIn(['sort', 'direction'], curDir === 'desc' ? 'asc' : 'desc');
+    case SELECT_PRODUCT:
+      if (action.product === '(all)') {
+        return state.delete('product');
       } else {
-        return state.set('sort', Immutable.Map({ column: action.column, direction: 'desc' }));
+        return state.set('product', action.product);
       }
-
-    case 'UPDATE_NETWORK_STATUS':
-      return state.setIn(['network', 'status'], action.status);
-
-    case 'REPLACE_BUG_DATA':
-      return state.setIn(['data', 'bugs'], Immutable.fromJS(action.data.bugs));
-
+    case TOGGLE_CLOSED:
+      return state.set('showClosed', !state.get('showClosed'));
+    case SORT_COLUMN:
+        let curCol = state.get('sortColumn');
+        if (curCol === action.column) {
+          let curDir = state.get('sortDirection');
+          return state.set('sortDirection', curDir === 'desc' ? 'asc' : 'desc');
+        } else {
+          return state.withMutations(state => {
+            state.set('sortColumn', action.column);
+            state.set('sortDirection', 'desc');
+          });
+        }
+    case EXPIRE_BUGS:
+      return state.set('lastUpdated', undefined);
+    case REQUEST_BUGS:
+      return state.set('isFetching', true);
+    case RECEIVE_BUGS:
+      return state.withMutations(state => {
+        state.set('isFetching', false);
+        state.set('lastUpdated', action.receivedAt);
+      });
     default:
       return state;
   }
 };
 
-export default reducer;
+const bugs = (state = Immutable.fromJS({ }), action) => {
+  switch(action.type) {
+    case EXPIRE_BUGS:
+      return state.clear();
+    case RECEIVE_BUGS:
+      return Immutable.fromJS(action.bugs);
+    default:
+      return state;
+  }
+};
+
+export default combineReducers({ meta, bugs });
