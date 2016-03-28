@@ -68,7 +68,38 @@ const mapStateToProps = (state) => ({
       (state) => state.getIn(['meta', 'sortDirection']),
       (state) => state.getIn(['meta', 'products']),
     ], (bugs, showClosed, sortColumn, sortDirection, products) => {
-      bugs = bugs.sortBy(x => x.get(sortColumn));
+      bugs = bugs.sort((a, b) => {
+        let ax = a.get(sortColumn);
+        let bx = b.get(sortColumn);
+
+        if (typeof ax === 'string' && typeof bx === 'string') {
+          ax = ax.toLowerCase();
+          bx = bx.toLowerCase();
+        }
+
+        switch (sortColumn) {
+          case 'product':
+            if (ax !== bx) { return ax > bx ? 1 : -1; }
+
+            let ay = a.get('component');
+            let by = b.get('component');
+
+            if (ay !== by) { return ay > by ? 1 : -1; }
+
+            let az = a.get('id');
+            let bz = b.get('id');
+
+            if (az !== bz) { return az > bz ? -1 : 1; } // <-- Reversed
+
+            return 0;
+          case 'creation_time':
+            if (ax !== bx) { return ax > bx ? -1 : 1; } // <-- Reversed
+          default:
+            if (ax !== bx) { return ax > bx ? 1 : -1; }
+
+            return 0;
+        }
+      });
 
       if (!products.includes('(all)')) {
         bugs = bugs.filter(bug => products.includes(bug.get('product')));

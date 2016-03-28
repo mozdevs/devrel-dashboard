@@ -49,7 +49,7 @@ const mapStateToProps = (state) => ({
   products: createSelector([
       (state) => state.get('bugs'),
     ], (bugs) => {
-      return bugs.map(bug => bug.get('product')).toSet().add('(all)').sort();
+      return bugs.map(bug => bug.get('product')).toSet().add('(all)').sortBy(x => x.toLowerCase());
     })(state),
 });
 

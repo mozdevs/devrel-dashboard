@@ -10,7 +10,7 @@ const meta = (state = Immutable.fromJS({
   isFetching: false,
   showClosed: false,
   sortColumn: 'id',
-  sortDirection: 'asc',
+  sortDirection: 'desc',
   products: Immutable.Set(['(all)'])
 }), action) => {
   switch (action.type) {
@@ -35,7 +35,7 @@ const meta = (state = Immutable.fromJS({
         } else {
           return state.withMutations(state => {
             state.set('sortColumn', action.column);
-            state.set('sortDirection', 'desc');
+            state.set('sortDirection', 'asc');
           });
         }
     case EXPIRE_BUGS:
