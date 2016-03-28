@@ -27,7 +27,7 @@ a:hover, a:focus { text-decoration: underline;  }
 table { border-collapse: collapse; }
 
 th, td {
-  padding: 0.25em 1em;
+  padding: 0.25em 2em 0.25em 1em;
   text-align: left;
   border-bottom: 1px solid #e1e1e1;
 }
@@ -49,8 +49,8 @@ th.sort-asc, th.sort-desc {
 }
 
 th.sort-asc::after, th.sort-desc::after {
-  position: relative;
-  left: 0.5em;
+  position: absolute;
+  margin-left: 0.5em;
 }
 
 th.sort-asc::after { content: "▼"; }
