@@ -8,6 +8,22 @@ body {
 a { text-decoration: none; }
 a:hover, a:focus { text-decoration: underline;  }
 
+#sidebar {
+	width: 12em;
+	float: left;
+}
+
+#sidebar label {
+	display: block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow-x: hidden;
+}
+
+#main {
+	margin-left: 13em;
+}
+
 table { border-collapse: collapse; }
 
 th, td {

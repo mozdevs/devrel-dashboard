@@ -1,11 +1,10 @@
 import React from 'react';
-import FilterBar from './FilterBar';
 import NetworkStatus from './NetworkStatus';
 
 const PageHeader = (props) => (
   <div>
+    <h1>DevAdvocacy Bugs</h1>
     <NetworkStatus />
-    <FilterBar />
   </div>
 );
 

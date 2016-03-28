@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import localforage from 'localforage';
 
 import PageHeader from '../components/PageHeader';
+import FilterBar from '../components/FilterBar';
 import BugList from '../components/BugList';
 
 import { fetchBugsIfNeeded } from '../actions';
@@ -21,6 +22,7 @@ class App extends React.Component {
     return (
       <div>
         <PageHeader />
+        <FilterBar />
         <BugList />
       </div>
     );

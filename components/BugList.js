@@ -41,8 +41,7 @@ const BugList = (props) => {
   }
 
   return (
-    <div>
-      <h1>DevAdvocacy Bugs</h1>
+    <div id="main">
       {body}
     </div>
   );

@@ -5,7 +5,7 @@ import { createSelector } from 'reselect';
 
 const FilterBar = (props) => {
   let productOptions = props.products.map(product => (
-    <label key={product}>
+    <label key={product} title={product}>
       <input type='checkbox'
              value={product}
              checked={props.selectedProducts.includes(product)}
@@ -14,12 +14,15 @@ const FilterBar = (props) => {
   ));
 
   return (
-    <form>
+    <form id="sidebar">
       <label>
         <input type='checkbox' checked={props.showClosed} onChange={props.onChange} />
         { ' ' }
         Show closed bugs
       </label>
+
+      <hr />
+
       <div>
         {productOptions}
       </div>
