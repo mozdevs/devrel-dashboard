@@ -26,6 +26,13 @@ const FilterBar = (props) => {
       <div>
         {productOptions}
       </div>
+
+      <hr />
+
+      <span style={{'color': 'red'}}>★</span>&mdash;Browser Parity Bugs
+
+      <p><em>(Just a demo to show that we can flag bugs based on Bugzilla keywords.)</em></p>
+
     </form>
   );
 };

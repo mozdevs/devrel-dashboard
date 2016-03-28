@@ -62,4 +62,6 @@ th.sort-desc::after { content: "▲"; /*! vertical-align: text-top; */}
 
 tr[data-open=false] { background-color: #eee; }
 
+tr[data-p1=true] > td:first-child::before{ content: "★"; color: red; position: absolute; margin-left: -1em; }
+
 th:last-child { width: 7em; }

@@ -27,7 +27,10 @@ const BugList = (props) => {
     }
   });
 
-  let row = (row) => ({ "data-open": row.get('is_open') });
+  let row = (row) => ({
+    "data-open": row.get('is_open'),
+    "data-p1": row.get('whiteboard').indexOf('parity') !== -1,
+  });
 
   let columnNames = {
     onClick: (column) => props.toggleSort(column)
