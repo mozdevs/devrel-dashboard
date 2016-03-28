@@ -1,5 +1,5 @@
 body {
-	font-size: 0.9em;
+  font-size: 0.9em;
   line-height: 1.6;
   font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #222;
@@ -9,19 +9,19 @@ a { text-decoration: none; }
 a:hover, a:focus { text-decoration: underline;  }
 
 #sidebar {
-	width: 12em;
-	float: left;
+  width: 12em;
+  float: left;
 }
 
 #sidebar label {
-	display: block;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow-x: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
 }
 
 #main {
-	margin-left: 13em;
+  margin-left: 13em;
 }
 
 table { border-collapse: collapse; }
@@ -29,34 +29,32 @@ table { border-collapse: collapse; }
 th, td {
   padding: 0.25em 1em;
   text-align: left;
-	border-bottom: 1px solid #e1e1e1;
+  border-bottom: 1px solid #e1e1e1;
 }
 
 th {
-	border-bottom-width: 3px;
+  border-bottom-width: 3px;
 }
 
 tbody tr:hover { background-color: #ffa; }
 
-/* --- */
-
 th:hover, th:active {
-	background-color: #eee;
-	border-bottom-color: red;
-	cursor: pointer;
+  background-color: #eee;
+  border-bottom-color: red;
+  cursor: pointer;
 }
 
 th.sort-asc, th.sort-desc {
-	border-bottom-color: red;
+  border-bottom-color: red;
 }
 
 th.sort-asc::after, th.sort-desc::after {
-	position: relative;
-	left: 0.5em;
+  position: relative;
+  left: 0.5em;
 }
 
 th.sort-asc::after { content: "▼"; }
-th.sort-desc::after { content: "▲"; /*! vertical-align: text-top; */}
+th.sort-desc::after { content: "▲"; }
 
 *, tr, td { box-sizing: border-box; }
 
