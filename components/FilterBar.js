@@ -4,29 +4,38 @@ import { toggleClosed, selectProduct } from '../actions';
 import { createSelector } from 'reselect';
 
 const FilterBar = (props) => {
-  let productOptions = props.products.map(product => <option value={product} key={product}>{product}</option>)
+  let productOptions = props.products.map(product => (
+    <label key={product}>
+      <input type='checkbox'
+             value={product}
+             checked={props.selectedProducts.includes(product)}
+             onChange={props.onProdFilter} /> {product}
+    </label>
+  ));
 
   return (
     <form>
       <label>
-        <input type='checkbox' checked={props.checked} onChange={props.onChange} />
+        <input type='checkbox' checked={props.showClosed} onChange={props.onChange} />
         { ' ' }
         Show closed bugs
       </label>
-      <select name="productfilter" onChange={props.onProdFilter}>
+      <div>
         {productOptions}
-      </select>
+      </div>
     </form>
   );
 };
 
 FilterBar.propTypes = {
-  checked: PropTypes.bool.isRequired,
+  showClosed: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
-  checked: state.getIn(['meta', 'showClosed']),
+  showClosed: state.getIn(['meta', 'showClosed']),
+  selectedProducts: state.getIn(['meta', 'products']),
+
   products: createSelector([
       (state) => state.get('bugs'),
     ], (bugs) => {

@@ -11,13 +11,19 @@ const meta = (state = Immutable.fromJS({
   showClosed: false,
   sortColumn: 'id',
   sortDirection: 'asc',
+  products: Immutable.Set(['(all)'])
 }), action) => {
   switch (action.type) {
     case SELECT_PRODUCT:
       if (action.product === '(all)') {
-        return state.delete('product');
+        return state.updateIn(['products'], s => s.clear().add('(all)'));
       } else {
-        return state.set('product', action.product);
+        return state.updateIn(['products'], s => {
+          let method = s.includes(action.product) ? 'delete' : 'add';
+          let result = s[method](action.product).delete('(all)');
+
+          return result.isEmpty() ? result.add('(all)') : result;
+        });
       }
     case TOGGLE_CLOSED:
       return state.set('showClosed', !state.get('showClosed'));

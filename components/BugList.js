@@ -64,12 +64,12 @@ const mapStateToProps = (state) => ({
       (state) => state.getIn(['meta', 'showClosed']),
       (state) => state.getIn(['meta', 'sortColumn']),
       (state) => state.getIn(['meta', 'sortDirection']),
-      (state) => state.getIn(['meta', 'product']),
-    ], (bugs, showClosed, sortColumn, sortDirection, product) => {
+      (state) => state.getIn(['meta', 'products']),
+    ], (bugs, showClosed, sortColumn, sortDirection, products) => {
       bugs = bugs.sortBy(x => x.get(sortColumn));
 
-      if (product) {
-        bugs = bugs.filter(bug => bug.get('product') === product);
+      if (!products.includes('(all)')) {
+        bugs = bugs.filter(bug => products.includes(bug.get('product')));
       }
 
       if (!showClosed) {
