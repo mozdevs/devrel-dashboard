@@ -36,18 +36,13 @@ const BugList = (props) => {
     onClick: (column) => props.toggleSort(column)
   }
 
-  let body;
-  if (props.bugList.count() === 0) {
-    body = <p style={{'textAlign': 'center'}}><em>No open bugs in this product.</em></p>;
+  if (props.bugList.count()) {
+    return <div id="main"><Table columns={columns} row={row} data={props.bugList} columnNames={columnNames} /></div>;
+  } else if (props.fetching && !props.lastUpdated) {
+    return <div id="main"><p style={{'textAlign': 'center'}}><em>Fetching data from Bugzilla...</em></p></div>;
   } else {
-    body = <Table columns={columns} row={row} data={props.bugList} columnNames={columnNames} />
+    return <div id="main"><p style={{'textAlign': 'center'}}><em>No bugs match your filters.</em></p></div>;
   }
-
-  return (
-    <div id="main">
-      {body}
-    </div>
-  );
 }
 
 BugList.propTypes = {
@@ -117,6 +112,8 @@ const mapStateToProps = (state) => ({
     })(state),
   sortCol: state.getIn(['meta', 'sortColumn']),
   sortDir: state.getIn(['meta', 'sortDirection']),
+  fetching: state.getIn(['meta', 'isFetching']),
+  lastUpdated: state.getIn(['meta', 'lastUpdated']),
 });
 
 const mapDispatchToProps = (dispatch) => ({
