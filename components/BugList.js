@@ -38,7 +38,7 @@ const BugList = (props) => {
 
   let body;
   if (props.bugList.count() === 0) {
-    body = <p><em>No open bugs in this product.</em></p>;
+    body = <p style={{'textAlign': 'center'}}><em>No open bugs in this product.</em></p>;
   } else {
     body = <Table columns={columns} row={row} data={props.bugList} columnNames={columnNames} />
   }

@@ -11,11 +11,9 @@ const NetworkStatus = (props) => {
     return <p>Initializing...</p>
   } else {
     return (
-      <p>
-        Last updated {moment(props.lastUpdated).fromNow()}
-        {' '}
-        <a href="#" onClick={props.refresh}>(Refresh)</a>
-      </p>
+      <p>Last updated <a href="#" onClick={props.refresh} title={moment(props.lastUpdate).toString()}>
+        {moment(props.lastUpdated).fromNow()}
+      </a></p>
     );
   }
 };
