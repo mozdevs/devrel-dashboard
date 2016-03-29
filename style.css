@@ -1,62 +1,108 @@
 body {
-	font-size: 0.9em;
+  font-size: 0.9em;
   line-height: 1.6;
   font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #222;
+  margin: 0;
+  background-color: #B7CFEA;;
 }
 
 a { text-decoration: none; }
 a:hover, a:focus { text-decoration: underline;  }
 
-#sidebar {
-	width: 12em;
-	float: left;
+#header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid #f00;
+  padding: 0.25em 1em;
+  background: #fff;
 }
 
+#header h1 {
+  font-size: 1.4em;
+}
+
+#header > * {
+  margin: 0;
+}
+
+#sidebar {
+  width: 12em;
+  float: left;
+}
+
+#sidebar > div {
+  border-bottom: 1px solid #e1e1e1;
+  padding: 0.25em;
+}
+
+#sidebar p {
+  margin-top: 0;
+}
+
+#sidebar p:last-child {
+  margin-bottom: 0;
+}
+
+#sidebar > div:first-child {
+  border-bottom-width: 3px;
+}
+
+#sidebar > *:last-child { border-bottom: none; }
+
 #sidebar label {
-	display: block;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow-x: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
+#sidebar, #main {
+  margin: 1em;
+  padding: 0;
+  border: 1px solid #929292;
+  border-radius: 5px;
+  background-color: #fff;
 }
 
 #main {
-	margin-left: 13em;
+  margin-left: 14em;
+  padding-bottom: 0;
 }
 
-table { border-collapse: collapse; }
+table { border-collapse: collapse; width: 100%; }
 
 th, td {
-  padding: 0.25em 1em;
+  padding: 0.25em 1em 0.25em 1em;
   text-align: left;
-	border-bottom: 1px solid #e1e1e1;
+  border-bottom: 1px solid #e1e1e1;
 }
 
 th {
-	border-bottom-width: 3px;
+  padding-right: 2em;
+  border-bottom-width: 3px;
 }
 
 tbody tr:hover { background-color: #ffa; }
 
-/* --- */
-
 th:hover, th:active {
-	background-color: #eee;
-	border-bottom-color: red;
-	cursor: pointer;
+  background-color: #eee;
+  border-bottom-color: red;
+  cursor: pointer;
 }
 
 th.sort-asc, th.sort-desc {
-	border-bottom-color: red;
+  border-bottom-color: red;
 }
 
 th.sort-asc::after, th.sort-desc::after {
-	position: relative;
-	left: 0.5em;
+  position: absolute;
+  margin-left: 0.5em;
 }
 
 th.sort-asc::after { content: "▼"; }
-th.sort-desc::after { content: "▲"; /*! vertical-align: text-top; */}
+th.sort-desc::after { content: "▲"; }
 
 *, tr, td { box-sizing: border-box; }
 
@@ -65,3 +111,5 @@ tr[data-open=false] { background-color: #eee; }
 tr[data-p1=true] > td:first-child::before{ content: "★"; color: red; position: absolute; margin-left: -1em; }
 
 th:last-child { width: 7em; }
+
+tbody tr:last-child td { border-bottom: none; }

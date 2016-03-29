@@ -15,24 +15,26 @@ const FilterBar = (props) => {
 
   return (
     <form id="sidebar">
-      <label>
-        <input type='checkbox' checked={props.showClosed} onChange={props.onChange} />
-        { ' ' }
-        Show closed bugs
-      </label>
+      <div>
+        <span style={{'fontWeight': 'bold'}}>Filters</span>
+      </div>
 
-      <hr />
+      <div>
+        <label>
+          <input type='checkbox' checked={props.showClosed} onChange={props.onChange} />
+          { ' ' }
+          Show closed bugs
+        </label>
+      </div>
 
       <div>
         {productOptions}
       </div>
 
-      <hr />
-
-      <span style={{'color': 'red'}}>★</span>&mdash;Browser Parity Bugs
-
-      <p><em>(Just a demo to show that we can flag bugs based on Bugzilla keywords.)</em></p>
-
+      <div>
+        <p><span style={{'color': 'red'}}>★</span>&mdash;Browser Parity Bugs</p>
+        <p><em>(Just a demo to show that we can flag bugs based on Bugzilla keywords.)</em></p>
+      </div>
     </form>
   );
 };
@@ -49,7 +51,7 @@ const mapStateToProps = (state) => ({
   products: createSelector([
       (state) => state.get('bugs'),
     ], (bugs) => {
-      return bugs.map(bug => bug.get('product')).toSet().add('(all)').sort();
+      return bugs.map(bug => bug.get('product')).toSet().add('(all)').sortBy(x => x.toLowerCase());
     })(state),
 });
 
