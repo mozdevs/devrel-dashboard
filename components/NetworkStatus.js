@@ -12,9 +12,9 @@ const NetworkStatus = (props) => {
   } else {
     return (
       <p>
-        Last updated
-        <b title={moment(props.lastUpdate).toString()}>{moment(props.lastUpdated).fromNow()}</b>
-        <button onClick={props.refresh} >
+        Last updated <b title={moment(props.lastUpdate).toString()}>
+          {moment(props.lastUpdated).fromNow()}
+        </b> <button onClick={props.refresh}>
           update now
         </button>
       </p>
