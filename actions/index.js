@@ -7,6 +7,8 @@ const CACHE_VERSION = 1;
 
 export const SELECT_PRODUCT = 'SELECT_PRODUCT';
 
+export const SELECT_PRIORITY = 'SELECT_PRIORITY';
+
 export const TOGGLE_CLOSED = 'TOGGLE_CLOSED';
 
 export const SORT_COLUMN = 'SORT_COLUMN';
@@ -18,6 +20,8 @@ export const RECEIVE_BUGS = 'RECEIVE_BUGS';
 // Synchronous Actions
 
 export const selectProduct = (product) => ({ type: SELECT_PRODUCT, product });
+
+export const selectPriority = (priority) => ({ type: SELECT_PRIORITY, priority });
 
 export const toggleClosed = () => ({ type: TOGGLE_CLOSED });
 
