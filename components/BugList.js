@@ -27,10 +27,14 @@ const BugList = (props) => {
     }
   });
 
-  let row = (row) => ({
-    "data-open": row.get('is_open'),
-    "data-p1": row.get('whiteboard').indexOf('parity') !== -1,
-  });
+  let row = (row) => {
+    let prio = row.get('whiteboard').match(/devrel:p(.)/i);
+
+    return {
+      'data-priority': (prio && prio[1]) || 'untriaged',
+      'data-open': row.get('is_open'),
+    };
+  };
 
   let columnNames = {
     onClick: (column) => props.toggleSort(column)
@@ -62,7 +66,8 @@ const mapStateToProps = (state) => ({
       (state) => state.getIn(['meta', 'sortColumn']),
       (state) => state.getIn(['meta', 'sortDirection']),
       (state) => state.getIn(['meta', 'products']),
-    ], (bugs, showClosed, sortColumn, sortDirection, products) => {
+      (state) => state.getIn(['meta', 'priorities']),
+    ], (bugs, showClosed, sortColumn, sortDirection, products, priorities) => {
       bugs = bugs.sort((a, b) => {
         let ax = a.get(sortColumn);
         let bx = b.get(sortColumn);
@@ -98,6 +103,17 @@ const mapStateToProps = (state) => ({
 
       if (!products.includes('(all)')) {
         bugs = bugs.filter(bug => products.includes(bug.get('product')));
+      }
+
+      if (!priorities.includes('(all)')) {
+        bugs = bugs.filter(bug => {
+          let re = /devrel:p(.)/i;
+          let wb = bug.get('whiteboard');
+
+          let match = re.exec(wb);
+
+          return priorities.includes(match ? match[1] : '(untriaged)');
+        });
       }
 
       if (!showClosed) {

@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import { combineReducers } from 'redux-immutable';
 
 import {
-  SELECT_PRODUCT, TOGGLE_CLOSED, SORT_COLUMN,
+  SELECT_PRODUCT, SELECT_PRIORITY, TOGGLE_CLOSED, SORT_COLUMN,
   EXPIRE_BUGS, REQUEST_BUGS, RECEIVE_BUGS,
 } from '../actions';
 
@@ -11,7 +11,8 @@ const meta = (state = Immutable.fromJS({
   showClosed: false,
   sortColumn: 'id',
   sortDirection: 'desc',
-  products: Immutable.Set(['(all)'])
+  products: Immutable.Set(['(all)']),
+  priorities: Immutable.Set(['1'])
 }), action) => {
   switch (action.type) {
     case SELECT_PRODUCT:
@@ -21,6 +22,17 @@ const meta = (state = Immutable.fromJS({
         return state.updateIn(['products'], s => {
           let method = s.includes(action.product) ? 'delete' : 'add';
           let result = s[method](action.product).delete('(all)');
+
+          return result.isEmpty() ? result.add('(all)') : result;
+        });
+      }
+    case SELECT_PRIORITY:
+      if (action.priority === '(all)') {
+        return state.updateIn(['priorities'], s => s.clear().add('(all)'));
+      } else {
+        return state.updateIn(['priorities'], s => {
+          let method = s.includes(action.priority) ? 'delete' : 'add';
+          let result = s[method](action.priority).delete('(all)');
 
           return result.isEmpty() ? result.add('(all)') : result;
         });
