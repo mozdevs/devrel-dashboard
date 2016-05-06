@@ -111,7 +111,7 @@ tr[data-open=false] { background-color: #eee; }
 tr[data-priority="1"] > td:first-child::before{ content: "»"; color: red; position: absolute; margin-left: -.8em; pointer-events: none; }
 tr[data-priority="2"] > td:first-child::before{ content: "›"; color: green; position: absolute; margin-left: -.8em; pointer-events: none; }
 tr[data-priority="3"] > td:first-child::before{ content: " "; color: blue; position: absolute; margin-left: -.8em; pointer-events: none; }
-tr[data-priority="x"] > td:first-child::before{ content: "✕"; color: black; position: absolute; margin-left: -.8em; pointer-events: none; }
+tr[data-priority="X"] > td:first-child::before{ content: "✕"; color: black; position: absolute; margin-left: -.8em; pointer-events: none; }
 tr[data-priority="untriaged"] > td:first-child::before{ content: "?"; color: black; position: absolute; margin-left: -.8em; pointer-events: none; }
 
 th:last-child { width: 7em; }

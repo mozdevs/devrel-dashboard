@@ -14,14 +14,29 @@ const FilterBar = (props) => {
   ));
 
   let priorityOptions = props.priorities.map(priority => {
-    let label = priority.length > 1 ? priority : `P${priority}`;
+    let label;
+    let color = priority.color ? priority.color : 'black';
+
+    if (priority.symbol) {
+      label = (
+        <span style={{ position: 'relative' }}>
+          <span style={{ color: color, position: 'absolute', left: 0, bottom: '-1px' }}>{priority.symbol}</span>
+          <span style={{ paddingLeft: '.8em' }}>{priority.label}</span>
+        </span>
+      );
+    } else {
+      label = (
+        <span style={{ paddingLeft: '.8em' }}>{priority.label}</span>
+      );
+    }
 
     return (
-      <label key={priority} title={priority}>
+      <label key={priority.value} title={priority.value}>
         <input type='checkbox'
-               value={priority}
-               checked={props.selectedPriorities.includes(priority)}
-               onChange={props.onPrioFilter} /> {label}
+               value={priority.value}
+               checked={props.selectedPriorities.includes(priority.value)}
+               onChange={props.onPrioFilter} />
+        {label}
       </label>
     );
   });
@@ -33,19 +48,19 @@ const FilterBar = (props) => {
       </div>
 
       <div>
-        <label>
-          <input type='checkbox' checked={props.showClosed} onChange={props.onChange} />
-          { ' ' }
-          Show closed bugs
-        </label>
-      </div>
-
-      <div>
         {productOptions}
       </div>
 
       <div>
         {priorityOptions}
+      </div>
+
+      <div>
+        <label>
+          <input type='checkbox' checked={props.showClosed} onChange={props.onChange} />
+          { ' ' }
+          Show closed bugs
+        </label>
       </div>
     </form>
   );
@@ -61,7 +76,14 @@ const mapStateToProps = (state) => ({
   selectedProducts: state.getIn(['meta', 'products']),
   selectedPriorities: state.getIn(['meta', 'priorities']),
 
-  priorities: ["(all)", "1", "2", "3", "X", "(untriaged)"],
+  priorities: [
+    {value: '(all)', label: '(all)'},
+    {value: '1', label: 'P1', symbol: '»', color: 'red'},
+    {value: '2', label: 'P2', symbol: '›', color: 'green'},
+    {value: '3', label: 'P3'},
+    {value: 'X', label: 'PX', symbol: '✕'},
+    {value: '(untriaged)', label: 'Untriaged', symbol: '?'},
+  ],
 
   products: createSelector([
       (state) => state.get('bugs'),
