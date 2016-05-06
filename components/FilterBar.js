@@ -78,10 +78,10 @@ const mapStateToProps = (state) => ({
 
   priorities: [
     {value: '(all)', label: '(all)'},
-    {value: '1', label: 'P1', symbol: '»', color: 'red'},
-    {value: '2', label: 'P2', symbol: '›', color: 'green'},
-    {value: '3', label: 'P3'},
-    {value: 'X', label: 'PX', symbol: '✕'},
+    {value: '1', label: 'P1 – Critical ', symbol: '»', color: 'red'},
+    {value: '2', label: 'P2 – Major', symbol: '›', color: 'green'},
+    {value: '3', label: 'P3 – Minor'},
+    {value: 'X', label: 'PX – Ignore', symbol: '✕'},
     {value: '(untriaged)', label: 'Untriaged', symbol: '?'},
   ],
 
