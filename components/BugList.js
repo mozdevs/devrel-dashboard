@@ -31,7 +31,7 @@ const BugList = (props) => {
     let prio = row.get('whiteboard').match(/devrel:p(.)/i);
 
     return {
-      'data-priority': (prio && prio[1]) || 'untriaged',
+      'data-priority': (prio && prio[1].toUpperCase()) || 'untriaged',
       'data-open': row.get('is_open'),
     };
   };
@@ -112,7 +112,7 @@ const mapStateToProps = (state) => ({
 
           let match = re.exec(wb);
 
-          return priorities.includes(match ? match[1] : '(untriaged)');
+          return priorities.includes(match ? match[1].toUpperCase() : '(untriaged)');
         });
       }
 
