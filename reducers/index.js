@@ -9,8 +9,8 @@ import {
 const meta = (state = Immutable.fromJS({
   isFetching: false,
   showClosed: false,
-  sortColumn: 'id',
-  sortDirection: 'desc',
+  sortColumn: 'product',
+  sortDirection: 'asc',
   products: Immutable.Set(['(all)']),
   priorities: Immutable.Set(['1'])
 }), action) => {
