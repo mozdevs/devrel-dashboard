@@ -1,39 +1,46 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, h1)
+import Bugzilla exposing (Bug)
+import Html exposing (Html, h1, li, text, ul)
 import Html.App
-import Http
-import Json.Decode
-import Task
 
 
 -- MODEL
 
 type alias Model =
-  { count : Int
+  { bugs : Bugzilla.Model
   }
 
 
 -- UPDATE
 
 type Msg
-  = FetchOk Int
-  | FetchFail Http.Error
+  = BzMsg Bugzilla.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    FetchFail _ ->
-      (model, Cmd.none)
-    FetchOk count ->
-      ({ model | count = count }, Cmd.none )
+    BzMsg subMsg ->
+      let
+        (model', cmd) =
+          Bugzilla.update subMsg model.bugs
+      in
+        ({ model | bugs = model' }, Cmd.map BzMsg cmd)
 
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  h1 [] [ text (toString model.count) ]
+  ul
+    []
+    (List.map viewBug model.bugs)
+
+viewBug : Bug -> Html Msg
+viewBug bug =
+  li
+    []
+    [ text (toString bug.id ++ "—" ++ bug.summary) ]
 
 
 -- SUBSCRIPTIONS
@@ -47,8 +54,9 @@ subscriptions model =
 
 init : (Model, Cmd Msg)
 init =
-  (Model 0, fetchBugs)
+  ({ bugs = [] }, Cmd.map BzMsg Bugzilla.fetch)
 
+main : Program Never
 main =
   Html.App.program
     { init = init
@@ -56,25 +64,3 @@ main =
     , update = update
     , subscriptions = subscriptions
     }
-
--- Scratch
-
-fetchBugs : Cmd Msg
-fetchBugs =
-  let
-    url =
-      "http://localhost:3000/db"
-  in
-    Task.perform FetchFail FetchOk (Http.get decodeCount url)
-
-decodeCount : Json.Decode.Decoder Int
-decodeCount =
-  Json.Decode.succeed -1
-
-
-{-
-Full Bugzilla URL:
-https://bugzilla.mozilla.org/rest/bug?keywords=DevAdvocacy&include_fields=id,summary,status,resolution,is_open,dupe_of,product,component,creator,creation_time,whiteboard
-Using json-server:
-localhost:3000/db
--}
