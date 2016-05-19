@@ -1,5 +1,7 @@
-module Bugzilla exposing (..)
+module Bugzilla exposing (Model, Msg, update, view, init)
 
+import Html exposing (Html, a, div, em, h1, li, strong, text, ul)
+import Html.Attributes exposing (href, target)
 import Http
 import Json.Decode exposing ((:=), Decoder, andThen, at, int, list, maybe, object3, string, succeed)
 import Json.Decode.Pipeline exposing (custom, decode, required)
@@ -10,6 +12,10 @@ import Task
 
 type alias Model =
   List Bug
+
+init : (Model, Cmd Msg)
+init =
+  ([], fetch)
 
 type alias Bug =
   { id : Int
@@ -47,6 +53,28 @@ update msg model =
       (model, Cmd.none)
     FetchOk bugs ->
       (bugs, Cmd.none)
+
+
+-- VIEW
+
+view : Model -> Html Msg
+view model =
+  div
+    []
+    (List.map viewBug model)
+
+viewBug : Bug -> Html Msg
+viewBug bug =
+  div
+    []
+    [ a
+      [ href ("https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ toString bug.id)
+      , target "_blank"
+      ]
+      [ strong [] [ text bug.summary ]
+      , em [] [ text <| " #" ++ toString bug.id ]
+      ]
+    ]
 
 
 -- HTTP

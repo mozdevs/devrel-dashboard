@@ -1,7 +1,7 @@
 module Main exposing (..)
 
-import Bugzilla exposing (Bug)
-import Html exposing (Html, h1, li, text, ul)
+import Bugzilla
+import Html exposing (Html, div)
 import Html.App
 
 
@@ -15,32 +15,24 @@ type alias Model =
 -- UPDATE
 
 type Msg
-  = BzMsg Bugzilla.Msg
+  = Bugs Bugzilla.Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    BzMsg subMsg ->
+    Bugs subMsg ->
       let
         (model', cmd) =
           Bugzilla.update subMsg model.bugs
       in
-        ({ model | bugs = model' }, Cmd.map BzMsg cmd)
+        ({ model | bugs = model' }, Cmd.map Bugs cmd)
 
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  ul
-    []
-    (List.map viewBug model.bugs)
-
-viewBug : Bug -> Html Msg
-viewBug bug =
-  li
-    []
-    [ text (toString bug.id ++ "—" ++ bug.summary) ]
+  Html.App.map Bugs (Bugzilla.view model.bugs)
 
 
 -- SUBSCRIPTIONS
@@ -54,7 +46,13 @@ subscriptions model =
 
 init : (Model, Cmd Msg)
 init =
-  ({ bugs = [] }, Cmd.map BzMsg Bugzilla.fetch)
+  let
+    (bugs, bugsCmd) =
+      Bugzilla.init
+  in
+    ( Model bugs
+    , Cmd.map Bugs bugsCmd
+    )
 
 main : Program Never
 main =
