@@ -1,12 +1,12 @@
 module Bugzilla exposing (Model, Msg, update, view, init)
 
-import Html exposing (Html, a, div, em, h1, li, span, strong, text, ul)
-import Html.Attributes exposing (attribute, class, href, target, title)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Http
-import Json.Decode exposing ((:=), Decoder, andThen, at, int, list, maybe, object3, string, succeed)
-import Json.Decode.Pipeline exposing (custom, decode, required)
-import Regex
-import String exposing (toLower)
+import Json.Decode exposing (..)
+import Json.Decode.Pipeline as Pipeline exposing (..)
+import Regex exposing (..)
+import String exposing (..)
 import Task
 
 
@@ -156,17 +156,17 @@ fetch =
 
 decodeBugs : Decoder (List Bug)
 decodeBugs =
-  at ["bugs"] (list decodeBug)
+  at ["bugs"] (Json.Decode.list decodeBug)
 
 decodeBug : Decoder Bug
 decodeBug =
-  decode Bug
-    |> required "id" int
-    |> required "summary" string
-    |> custom statusDecoder
-    |> custom priorityDecoder
-    |> required "product" string
-    |> required "component" string
+  Pipeline.decode Bug
+    |> Pipeline.required "id" int
+    |> Pipeline.required "summary" string
+    |> Pipeline.custom statusDecoder
+    |> Pipeline.custom priorityDecoder
+    |> Pipeline.required "product" string
+    |> Pipeline.required "component" string
     -- Other fields of interest:
     -- open, created, creator
 
