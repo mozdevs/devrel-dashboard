@@ -1,0 +1,57 @@
+html { background-color: #333; }
+body {
+  background-color: #fff;
+  font-family: sans-serif;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 1em;
+}
+
+a:link, a:visited, a:hover, a:active { color: #000; text-decoration: none; }
+a:hover, a:focus { text-decoration: underline; }
+
+.bug-summary { font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  }
+
+.bug {
+  box-sizing: border-box;
+  border: 1px solid gray;
+  padding: .25em;
+  margin: 1em 0;
+  position: relative;
+  overflow: hidden;
+}
+
+a.bug-id { color: #555; }
+a.bug-id:hover { color: #555; z-index: 1; background-color: white; }
+
+.bug-header {
+  display: flex;
+  font-size: 0.75em;
+  padding-bottom: 0.25em;
+  flex-direction: row-reverse;
+}
+
+.bug[data-open="False"] { background-color: #ccc; }
+
+.bug[data-open="False"]::after {
+  content: attr(data-status);
+  width: 14em; padding: 3px 0;
+  position: absolute; right: -3.5em; top: 2.75em;
+  transform: rotate(45deg);
+  background-color: transparent; color: transparent; font-weight: bold; font-size: .8em;
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+.bug[data-status="FIXED"]::after      { background-color: #08f; color: white; border-color: black; }
+.bug[data-status="WORKSFORME"]::after { background-color: #80f; color: white; border-color: black; }
+.bug[data-status="DUPLICATE"]::after  { background-color: #fff; color: black; border-color: black; }
+
+.bug[data-status="INVALID"]::after    { background-color: #ff0; color: black; border-color: black; }
+.bug[data-status="INCOMPLETE"]::after { background-color: #f00; color: white; border-color: black; }
+
+.bug[data-status="WONTFIX"]::after    { background-color: #555; color: white; border-color: black; }
+

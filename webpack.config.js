@@ -23,6 +23,10 @@ const config = {
         test: /\.elm$/,
         exclude: [/elm-stuff/, /node_modules/],
         loader: 'elm-hot!elm-webpack?warn=true'
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
       }
     ]
   },

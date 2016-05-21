@@ -1,7 +1,7 @@
 module Bugzilla exposing (Model, Msg, update, view, init)
 
 import Html exposing (Html, a, div, em, h1, li, strong, text, ul)
-import Html.Attributes exposing (href, target)
+import Html.Attributes exposing (attribute, class, href, target, title)
 import Http
 import Json.Decode exposing ((:=), Decoder, andThen, at, int, list, maybe, object3, string, succeed)
 import Json.Decode.Pipeline exposing (custom, decode, required)
@@ -27,7 +27,9 @@ type Status
   = Unconfirmed
   | New
   | Assigned
+  | Reopened
   | Resolved Resolution
+  | Verified Resolution
   | UnknownStatus
 
 type Resolution
@@ -66,15 +68,62 @@ view model =
 viewBug : Bug -> Html Msg
 viewBug bug =
   div
-    []
-    [ a
-      [ href ("https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ toString bug.id)
-      , target "_blank"
-      ]
-      [ strong [] [ text bug.summary ]
-      , em [] [ text <| " #" ++ toString bug.id ]
-      ]
+    [ class "bug"
+    , attribute "data-open" (toString <| bugOpen bug)
+    , attribute "data-status" (bugStatus bug)
     ]
+    [ div
+        [ class "bug-header" ]
+        [ bugLink [ class "bug-id" ] bug ("#" ++ (toString bug.id))
+        ]
+    , bugLink [ class "bug-summary" ] bug bug.summary
+    ]
+
+bugLink : List (Html.Attribute Msg) -> Bug -> String -> Html Msg
+bugLink attrs bug label =
+  let
+    url =
+      "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
+  in
+    a
+      ([ href url
+       , target "_blank"
+       , title (bugStatus bug ++ ": " ++ bug.summary)
+       ] ++ attrs)
+      [ text label ]
+
+bugStatus : Bug -> String
+bugStatus bug =
+  case bug.status of
+    New -> "NEW"
+    Unconfirmed -> "NEW"
+    Assigned -> "ASSIGNED"
+    Reopened -> "REOPENED"
+    Resolved Fixed -> "FIXED"
+    Resolved Invalid -> "INVALID"
+    Resolved WontFix -> "WONTFIX"
+    Resolved WorksForMe -> "WORKSFORME"
+    Resolved Incomplete -> "INCOMPLETE"
+    Resolved (Duplicate id) -> "DUPLICATE"
+    Resolved UnknownResolution -> "(unknown)"
+    Verified Fixed -> "FIXED"
+    Verified Invalid -> "INVALID"
+    Verified WontFix -> "WONTFIX"
+    Verified WorksForMe -> "WORKSFORME"
+    Verified Incomplete -> "INCOMPLETE"
+    Verified (Duplicate id) -> "DUPLICATE"
+    Verified UnknownResolution -> "(unknown)"
+    UnknownStatus -> "(unknown)"
+
+bugOpen : Bug -> Bool
+bugOpen bug =
+  case bug.status of
+    Resolved _ -> False
+    _ -> True
+
+urlForId : Int -> String
+urlForId id =
+  "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString id)
 
 
 -- HTTP
@@ -122,12 +171,23 @@ statusInfo (status, resolution, dupe) =
         "FIXED" -> Resolved Fixed
         "INVALID" -> Resolved Invalid
         "WONTFIX" -> Resolved WontFix
-        "WORKSFORME" -> Resolved WorksForMe
-        "INCOMPLETE" -> Resolved Incomplete
         "DUPLICATE" -> case dupe of
           Just id -> Resolved (Duplicate id)
           Nothing -> Resolved UnknownResolution
+        "WORKSFORME" -> Resolved WorksForMe
+        "INCOMPLETE" -> Resolved Incomplete
         _ -> Resolved UnknownResolution
+      "VERIFIED" -> case resolution of
+        "FIXED" -> Verified Fixed
+        "INVALID" -> Verified Invalid
+        "WONTFIX" -> Verified WontFix
+        "DUPLICATE" -> case dupe of
+          Just id -> Verified (Duplicate id)
+          Nothing -> Verified UnknownResolution
+        "WORKSFORME" -> Verified WorksForMe
+        "INCOMPLETE" -> Verified Incomplete
+        _ -> Verified UnknownResolution
+      "REOPENED" -> Reopened
       _ -> UnknownStatus
   in
     succeed result
