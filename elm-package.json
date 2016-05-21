@@ -4,7 +4,7 @@
     "repository": "https://github.com/mozdevs/devrel-dashboard.git",
     "license": "ISC",
     "source-directories": [
-        "."
+        "./src"
     ],
     "exposed-modules": [],
     "dependencies": {

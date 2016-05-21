@@ -1,0 +1,23 @@
+{
+  "name": "devrel-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "webpack-dev-server -d --hot --quiet",
+    "build": "webpack --define process.env.NODE_ENV='production'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dan Callahan <dan.callahan@gmail.com>",
+  "license": "ISC",
+  "repository": "mozdevs/devrel-dashboard",
+  "bugs": "https://github.com/mozdevs/devrel-dashboard/issues",
+  "homepage": "https://mozdevs.github.io/devrel-dashboard",
+  "dependencies": {},
+  "devDependencies": {
+    "elm": "^0.17.0",
+    "elm-hot-loader": "^0.3.1",
+    "elm-webpack-loader": "^3.0.1",
+    "webpack": "^2.1.0-beta.7",
+    "webpack-dev-server": "^2.1.0-beta.0"
+  }
+}
