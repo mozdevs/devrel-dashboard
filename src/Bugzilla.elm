@@ -1,10 +1,12 @@
 module Bugzilla exposing (Model, Msg, update, view, init)
 
-import Html exposing (Html, a, div, em, h1, li, strong, text, ul)
+import Html exposing (Html, a, div, em, h1, li, span, strong, text, ul)
 import Html.Attributes exposing (attribute, class, href, target, title)
 import Http
 import Json.Decode exposing ((:=), Decoder, andThen, at, int, list, maybe, object3, string, succeed)
 import Json.Decode.Pipeline exposing (custom, decode, required)
+import Regex
+import String exposing (toLower)
 import Task
 
 
@@ -21,6 +23,9 @@ type alias Bug =
   { id : Int
   , summary : String
   , status : Status
+  , priority : Priority
+  , product : String
+  , component : String
   }
 
 type Status
@@ -40,6 +45,13 @@ type Resolution
   | WorksForMe
   | Incomplete
   | UnknownResolution
+
+type Priority
+  = P1
+  | P2
+  | P3
+  | PX
+  | Untriaged
 
 
 -- UPDATE
@@ -67,17 +79,22 @@ view model =
 
 viewBug : Bug -> Html Msg
 viewBug bug =
-  div
-    [ class "bug"
-    , attribute "data-open" (toString <| bugOpen bug)
-    , attribute "data-status" (bugStatus bug)
-    ]
-    [ div
-        [ class "bug-header" ]
-        [ bugLink [ class "bug-id" ] bug ("#" ++ (toString bug.id))
-        ]
-    , bugLink [ class "bug-summary" ] bug bug.summary
-    ]
+  let
+    prodComp =
+      bug.product ++ " :: " ++ bug.component
+  in
+    div
+      [ class "bug"
+      , attribute "data-open" (toString <| bugOpen bug)
+      , attribute "data-status" (bugStatus bug)
+      ]
+      [ div
+          [ class "bug-header" ]
+          [ span [ class "bug-prodcomp", title prodComp ] [ text prodComp ]
+          , bugLink [ class "bug-id" ] bug ("#" ++ (toString bug.id))
+          ]
+      , bugLink [ class "bug-summary" ] bug bug.summary
+      ]
 
 bugLink : List (Html.Attribute Msg) -> Bug -> String -> Html Msg
 bugLink attrs bug label =
@@ -147,8 +164,11 @@ decodeBug =
     |> required "id" int
     |> required "summary" string
     |> custom statusDecoder
+    |> custom priorityDecoder
+    |> required "product" string
+    |> required "component" string
     -- Other fields of interest:
-    -- open, created, creator, whiteboard, product, component
+    -- open, created, creator
 
 
 statusDecoder : Decoder Status
@@ -191,3 +211,34 @@ statusInfo (status, resolution, dupe) =
       _ -> UnknownStatus
   in
     succeed result
+
+priorityDecoder : Decoder Priority
+priorityDecoder =
+  ("whiteboard" := string) `andThen` prioFromWhiteboard
+
+prioFromWhiteboard : String -> Decoder Priority
+prioFromWhiteboard wb =
+  let
+    wb' =
+      toLower wb
+    re =
+      Regex.regex "\\[devrel:p(.)\\]"
+    matches =
+      Regex.find (Regex.AtMost 1) re wb'
+    p =
+      case matches of
+        [] -> 
+          Untriaged
+        x :: _ ->
+          case x.submatches of
+            [] ->
+              Untriaged
+            y :: _ ->
+              case y of 
+                Just "1" -> P1
+                Just "2" -> P2
+                Just "3" -> P3
+                Just "x" -> PX
+                _ -> Untriaged
+  in
+    succeed p

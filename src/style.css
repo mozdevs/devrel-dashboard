@@ -2,7 +2,6 @@ html { background-color: #333; }
 body {
   background-color: #fff;
   font-family: sans-serif;
-  max-width: 320px;
   margin: 0 auto;
   padding: 1em;
 }
@@ -19,19 +18,32 @@ a:hover, a:focus { text-decoration: underline; }
   box-sizing: border-box;
   border: 1px solid gray;
   padding: .25em;
-  margin: 1em 0;
+  margin: 0;
+  border-bottom: 0;
   position: relative;
   overflow: hidden;
+  background: white;
 }
 
-a.bug-id { color: #555; }
-a.bug-id:hover { color: #555; z-index: 1; background-color: white; }
+.bug:hover, .bug[data-open="False"]:hover {
+  background: #ffd;
+}
+
+.bug-prodcomp { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+a.bug-id { color: #555; flex-shrink: 0; }
+a.bug-id:hover { color: #555; z-index: 1; background-color: inherit; }
 
 .bug-header {
   display: flex;
   font-size: 0.75em;
   padding-bottom: 0.25em;
-  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.bug-footer {
+  font-size: 0.75em;
+  padding-top: 0.25em;
+  justify-content: space-between;
 }
 
 .bug[data-open="False"] { background-color: #ccc; }
