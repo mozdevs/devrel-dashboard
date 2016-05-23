@@ -2,7 +2,7 @@ module Bugzilla exposing (Model, Msg, update, view, init)
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (id, class, attribute, target, href)
+import Html.Attributes exposing (id, class, attribute, target, href, title)
 import Http
 import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
 import Json.Decode.Extra exposing ((|:), dict2)
@@ -85,26 +85,24 @@ update msg model =
 view : Model -> Html Msg
 view model =
   let
-    stripParens =
-      String.filter (\char -> not ( char == '(' || char == ')' ))
-
-    stateToString state =
-      case state of
-        Just (Resolved (Duplicate _)) ->
-          "Resolved Duplicate"
-
-        Just (Verified (Duplicate _)) ->
-          "Verified Duplicate"
-
-        Just status ->
-          (toString >> stripParens) status
-
-        _ ->
-          "(Unknown)"
+    bogusSortBar =
+      div
+        [ id "sort-bar"  ]
+        [ text "Sort: "
+        , strong [] [ text "ID ▼"  ]
+        , text ", "
+        , text "Product/Component"
+        , text ", "
+        , text "Status"
+        ]
   in
-    ul
+    div
       [ id "bugs" ]
-      (List.map (\bug -> li [] [viewBug bug]) <| Dict.values model)
+      [ bogusSortBar
+      , ul
+          [ id "bugs" ]
+          (List.map (\bug -> li [] [viewBug bug]) <| Dict.values model)
+      ]
 
 
 viewBug : Bug -> Html Msg
@@ -114,16 +112,43 @@ viewBug bug =
       "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
 
     stateString =
-      Maybe.withDefault "Unknown" (Maybe.map toString bug.state)
+      case bug.state of
+        Just (Resolved (Duplicate _)) ->
+          "Resolved Duplicate"
+
+        Just (Verified (Duplicate _)) ->
+          "Verified Duplicate"
+
+        Just status ->
+          toString status
+
+        Nothing ->
+          "(Unknown Status)"
 
     prioString =
       Maybe.withDefault "Untriaged" (Maybe.map toString bug.priority)
+
+    pcString =
+      bug.product ++ " :: " ++ bug.component
+
+    open =
+      case bug.state of
+        Just (Resolved _) ->
+          False
+
+        Just (Verified _) ->
+          False
+
+        _ ->
+          True
   in
     div
-      [ class "bug" ]
+      [ class "bug", attribute "data-open" (toString open) ]
       [ div
           [ class "bug-header" ]
-          [ div [] [ text <| bug.product ++ " :: " ++ bug.component ]
+          [ div
+              [ class "oneline", title pcString ]
+              [ text pcString ]
           , a
               [ target "_blank", href bugUrl ]
               [ text <| "#" ++ (toString bug.id) ]
@@ -134,7 +159,7 @@ viewBug bug =
       , div
           [ class "bug-footer" ]
           [ div [] [ text stateString ]
-          , div [] [ text prioString ]
+          -- , div [] [ text prioString ]
           ]
 
       ]

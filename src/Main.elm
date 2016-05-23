@@ -39,7 +39,7 @@ view model =
         [ id "header" ]
         [ h1 [] [ text "Mozilla DevRel Dashboard" ] ]
     , div
-        [ id "bugs" ]
+        [ id "content" ]
         [ Html.App.map BugzillaMsg (Bugzilla.view model.bugs) ]
     ]
 

@@ -1,7 +1,7 @@
 /* Global */
 
 body {
-  font-size: 0.9em;
+  font-size: 0.9rem;
   line-height: 1.6;
   font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #222;
@@ -11,6 +11,14 @@ body {
 
 a:link, a:visited, a:hover, a:active { text-decoration: none; }
 a:hover, a:focus { text-decoration: underline; }
+
+.oneline {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+ul { list-style-type: none; padding: 0; }
 
 /* Header */
 
@@ -25,15 +33,51 @@ a:hover, a:focus { text-decoration: underline; }
   margin: 0;
 }
 
+/* Sorting Bar */
+
+#sort-bar {
+  text-align: right;
+  margin-top: 1em;
+  padding: 0 0.4em;
+}
+
 /* Bug List */
 
 #bugs {
-  background-color: #fff;
-  margin: 2em 1em;
+  margin: 0 auto;
+  max-width: 40em;
 }
 
+.bug {
+  padding: 0.25em 0.4em;
+  border: 1px solid #999;
+  border-bottom-width: 0;
+  background-color: #fff;
+}
 
+.bug[data-open="False"] {
+  background-color: #eee;
+}
 
+.bug-header, .bug-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.bug-footer {
+  flex-direction: row-reverse;
+}
+
+.bug-footer,
+.bug-header,
+.bug-header a:link,
+.bug-header a:visited,
+.bug-header a:hover,
+.bug-header a:active,
+.bug-header a:focus {
+  color: #333;
+}
 
 /*
 html { background-color: #333; }
