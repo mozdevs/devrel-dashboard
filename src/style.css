@@ -44,7 +44,7 @@ ul { list-style-type: none; padding: 0; }
 /* Bug List */
 
 #bugs {
-  margin: 0 auto;
+  margin: 0 auto 5em;
   max-width: 40em;
 }
 
@@ -53,10 +53,16 @@ ul { list-style-type: none; padding: 0; }
   border: 1px solid #999;
   border-bottom-width: 0;
   background-color: #fff;
+  position: relative;
+  overflow: hidden;
 }
 
 .bug[data-open="False"] {
   background-color: #eee;
+}
+
+.bug:hover {
+  background-color: #ffd;
 }
 
 .bug-header, .bug-footer {
@@ -65,87 +71,29 @@ ul { list-style-type: none; padding: 0; }
   font-size: 0.75rem;
 }
 
-.bug-footer {
-  flex-direction: row-reverse;
+#bugs li:last-child .bug {
+  border-bottom-width: 1px;
 }
 
-.bug-footer,
-.bug-header,
-.bug-header a:link,
-.bug-header a:visited,
-.bug-header a:hover,
-.bug-header a:active,
-.bug-header a:focus {
+.bug-footer, .bug-header {
   color: #333;
 }
 
-/*
-html { background-color: #333; }
-body {
-  background-color: #fff;
-  font-family: sans-serif;
-  margin: 0 auto;
-  padding: 1em;
-}
-
-a:link, a:visited, a:hover, a:active { color: #000; text-decoration: none; }
-a:hover, a:focus { text-decoration: underline; }
-
-.bug-summary { font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  }
-
-.bug {
-  box-sizing: border-box;
-  border: 1px solid gray;
-  padding: .25em;
-  margin: 0;
-  border-bottom: 0;
-  position: relative;
-  overflow: hidden;
-  background: white;
-}
-
-.bug:hover, .bug[data-open="False"]:hover {
-  background: #ffd;
-}
-
-.bug-prodcomp { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-a.bug-id { color: #555; flex-shrink: 0; }
-a.bug-id:hover { color: #555; z-index: 1; background-color: inherit; }
-
-.bug-header {
-  display: flex;
-  font-size: 0.75em;
-  padding-bottom: 0.25em;
-  justify-content: space-between;
-}
-
-.bug-footer {
-  font-size: 0.75em;
-  padding-top: 0.25em;
-  justify-content: space-between;
-}
-
-.bug[data-open="False"] { background-color: #ccc; }
-
 .bug[data-open="False"]::after {
   content: attr(data-status);
-  width: 14em; padding: 3px 0;
-  position: absolute; right: -3.5em; top: 2.75em;
+  width: 13em; padding: 3px 0 3px 3em;
+  position: absolute; right: -3.5em; top: 3em;
   transform: rotate(45deg);
-  background-color: transparent; color: transparent; font-weight: bold; font-size: .8em;
-  text-align: center;
+  background-color: transparent; color: transparent; font-weight: bold; font-size: .75rem;
+  text-align: left;
   border: 1px solid transparent;
 }
 
-.bug[data-status="FIXED"]::after      { background-color: #08f; color: white; border-color: black; }
-.bug[data-status="WORKSFORME"]::after { background-color: #80f; color: white; border-color: black; }
-.bug[data-status="DUPLICATE"]::after  { background-color: #fff; color: black; border-color: black; }
+.bug[data-status="Fixed"]::after      { background-color: #08f; color: white; border-color: black; }
+.bug[data-status="WorksForMe"]::after { background-color: #80f; color: white; border-color: black; }
+.bug[data-status="Duplicate"]::after  { background-color: #fff; color: black; border-color: black; }
 
-.bug[data-status="INVALID"]::after    { background-color: #ff0; color: black; border-color: black; }
-.bug[data-status="INCOMPLETE"]::after { background-color: #f00; color: white; border-color: black; }
+.bug[data-status="Invalid"]::after    { background-color: #ff0; color: black; border-color: black; }
+.bug[data-status="Incomplete"]::after { background-color: #f00; color: white; border-color: black; }
 
-.bug[data-status="WONTFIX"]::after    { background-color: #555; color: white; border-color: black; }
-*/
+.bug[data-status="WontFix"]::after    { background-color: #555; color: white; border-color: black; }

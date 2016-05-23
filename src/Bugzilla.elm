@@ -114,13 +114,22 @@ viewBug bug =
     stateString =
       case bug.state of
         Just (Resolved (Duplicate _)) ->
-          "Resolved Duplicate"
+          "Duplicate"
 
         Just (Verified (Duplicate _)) ->
-          "Verified Duplicate"
+          "Duplicate"
 
-        Just status ->
-          toString status
+        Just (Resolved resolution) ->
+          toString resolution
+
+        Just (Verified resolution) ->
+          toString resolution
+
+        Just Assigned ->
+          "Assigned"
+
+        Just _ ->
+          ""
 
         Nothing ->
           "(Unknown Status)"
@@ -143,7 +152,10 @@ viewBug bug =
           True
   in
     div
-      [ class "bug", attribute "data-open" (toString open) ]
+      [ class "bug"
+      , attribute "data-open" (toString open)
+      , attribute "data-status" stateString
+      ]
       [ div
           [ class "bug-header" ]
           [ div
@@ -155,13 +167,8 @@ viewBug bug =
           ]
       , div
           [ class "bug-body" ]
-          [ a [ target "_blank", href bugUrl ] [ text bug.summary ] ]
-      , div
-          [ class "bug-footer" ]
-          [ div [] [ text stateString ]
-          -- , div [] [ text prioString ]
-          ]
-
+          -- [ a [ target "_blank", href bugUrl ] [ text bug.summary ] ]
+          [ strong [] [ text bug.summary ] ]
       ]
 
 
