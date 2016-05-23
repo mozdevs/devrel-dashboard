@@ -1,10 +1,11 @@
 module Bugzilla exposing (Model, Msg, update, view, init)
 
+import Debug
 import Dict exposing (Dict)
 import Html exposing (..)
 -- import Html.Attributes exposing (..)
 import Http
-import Json.Decode exposing ((:=), Decoder, at, andThen, int, string, maybe, object3, succeed)
+import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
 import Json.Decode.Extra exposing ((|:), dict2)
 import Regex
 import String
@@ -71,7 +72,12 @@ type Msg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  (model, Cmd.none)
+  case msg of
+    FetchFail _ ->
+      (model, Cmd.none)
+
+    FetchOk bugs ->
+      (bugs, Cmd.none)
 
 
 -- VIEW
@@ -79,7 +85,33 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  text "Hello, world."
+  div
+    []
+    [ h1 [] [ text ("Count of bugs: " ++ (toString <| Dict.size model)) ]
+    , table
+        []
+        [ thead
+            []
+            [ tr
+                []
+                [ th [] [ text "ID" ]
+                , th [] [ text "Summary "]
+                ]
+            ]
+        , tbody
+            []
+            (Dict.values model
+              |> List.map (\bug ->
+                   tr
+                     []
+                     [ td [] [ text (toString bug.id) ]
+                     , td [] [ text bug.summary ]
+                     ])
+            )
+        ]
+    ]
+
+
 
 
 -- HTTP
@@ -115,7 +147,10 @@ fetch =
 
 bugDecoder : Decoder (Dict Int Bug)
 bugDecoder =
-  at ["bugs"] (dict2 decId decBug)
+  -- In theory, I should be able to do this with Json.Decode.Extra.dict2...
+  at ["bugs"] (list decBug)
+    |> Json.Decode.map (List.map (\bug -> (,) bug.id bug))
+    |> Json.Decode.map Dict.fromList
 
 
 decId : Decoder Int
