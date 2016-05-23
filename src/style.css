@@ -49,7 +49,7 @@ ul { list-style-type: none; padding: 0; }
 }
 
 .bug {
-  padding: 0.25em 0.4em;
+  padding: 0.25em 0.5em 0.25em 1em;
   border: 1px solid #999;
   border-bottom-width: 0;
   background-color: #fff;
@@ -79,15 +79,27 @@ ul { list-style-type: none; padding: 0; }
   color: #333;
 }
 
-.bug[data-open="False"]::after {
+/* Bug Status Banners */
+
+.bug[data-status="Assigned"]::after,
+.bug[data-status="Fixed"]::after,
+.bug[data-status="WorksForMe"]::after,
+.bug[data-status="Duplicate"]::after,
+.bug[data-status="Invalid"]::after,
+.bug[data-status="Incomplete"]::after,
+.bug[data-status="WontFix"]::after {
   content: attr(data-status);
-  width: 13em; padding: 3px 0 3px 3em;
+  width: 13em; padding: 0 0 0 3em;
   position: absolute; right: -3.5em; top: 3em;
   transform: rotate(45deg);
   background-color: transparent; color: transparent; font-weight: bold; font-size: .75rem;
   text-align: left;
   border: 1px solid transparent;
+  opacity: 0.75;
+  pointer-events: none;
 }
+
+.bug[data-status="Assigned"]::after   { background-color: #7f5; color: black; border-color: black; }
 
 .bug[data-status="Fixed"]::after      { background-color: #08f; color: white; border-color: black; }
 .bug[data-status="WorksForMe"]::after { background-color: #80f; color: white; border-color: black; }
@@ -97,3 +109,19 @@ ul { list-style-type: none; padding: 0; }
 .bug[data-status="Incomplete"]::after { background-color: #f00; color: white; border-color: black; }
 
 .bug[data-status="WontFix"]::after    { background-color: #555; color: white; border-color: black; }
+
+/* Bug Priority Markers */
+
+.bug[data-priority="P1"]::before,
+.bug[data-priority="P2"]::before,
+.bug[data-priority="P3"]::before,
+.bug[data-priority="PX"]::before,
+.bug[data-priority="Untriaged"]::before {
+  position: absolute;
+  pointer-events: none;
+}
+
+.bug[data-priority="P1"]::before        { content: "»"; color: #f00; font-size: 1.2rem; top: 1.10rem; left: 0.10rem; }
+.bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.25rem; }
+.bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.05rem; }
+.bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.25rem; }

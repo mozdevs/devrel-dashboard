@@ -155,6 +155,7 @@ viewBug bug =
       [ class "bug"
       , attribute "data-open" (toString open)
       , attribute "data-status" stateString
+      , attribute "data-priority" prioString
       ]
       [ div
           [ class "bug-header" ]
@@ -167,7 +168,6 @@ viewBug bug =
           ]
       , div
           [ class "bug-body" ]
-          -- [ a [ target "_blank", href bugUrl ] [ text bug.summary ] ]
           [ strong [] [ text bug.summary ] ]
       ]
 
