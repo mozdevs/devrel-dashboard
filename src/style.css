@@ -1,3 +1,41 @@
+/* Global */
+
+body {
+  font-size: 0.9em;
+  line-height: 1.6;
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #222;
+  background-color: #b7cfea;
+  margin: 0;
+}
+
+a:link, a:visited, a:hover, a:active { text-decoration: none; }
+a:hover, a:focus { text-decoration: underline; }
+
+/* Header */
+
+#header {
+  background-color: #fff;
+  border-bottom: 1px solid red;
+  padding: 0.25em 1em;
+}
+
+#header h1 {
+  font-size: 1.4em;
+  margin: 0;
+}
+
+/* Bug List */
+
+#bugs {
+  background-color: #fff;
+  margin: 2em 1em;
+}
+
+
+
+
+/*
 html { background-color: #333; }
 body {
   background-color: #fff;
@@ -66,4 +104,4 @@ a.bug-id:hover { color: #555; z-index: 1; background-color: inherit; }
 .bug[data-status="INCOMPLETE"]::after { background-color: #f00; color: white; border-color: black; }
 
 .bug[data-status="WONTFIX"]::after    { background-color: #555; color: white; border-color: black; }
-
+*/

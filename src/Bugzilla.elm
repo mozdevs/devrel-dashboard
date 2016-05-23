@@ -1,9 +1,8 @@
 module Bugzilla exposing (Model, Msg, update, view, init)
 
-import Debug
 import Dict exposing (Dict)
 import Html exposing (..)
--- import Html.Attributes exposing (..)
+import Html.Attributes exposing (id, class, attribute, target, href)
 import Http
 import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
 import Json.Decode.Extra exposing ((|:), dict2)
@@ -85,33 +84,60 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div
-    []
-    [ h1 [] [ text ("Count of bugs: " ++ (toString <| Dict.size model)) ]
-    , table
-        []
-        [ thead
-            []
-            [ tr
-                []
-                [ th [] [ text "ID" ]
-                , th [] [ text "Summary "]
-                ]
-            ]
-        , tbody
-            []
-            (Dict.values model
-              |> List.map (\bug ->
-                   tr
-                     []
-                     [ td [] [ text (toString bug.id) ]
-                     , td [] [ text bug.summary ]
-                     ])
-            )
-        ]
-    ]
+  let
+    stripParens =
+      String.filter (\char -> not ( char == '(' || char == ')' ))
+
+    stateToString state =
+      case state of
+        Just (Resolved (Duplicate _)) ->
+          "Resolved Duplicate"
+
+        Just (Verified (Duplicate _)) ->
+          "Verified Duplicate"
+
+        Just status ->
+          (toString >> stripParens) status
+
+        _ ->
+          "(Unknown)"
+  in
+    ul
+      [ id "bugs" ]
+      (List.map (\bug -> li [] [viewBug bug]) <| Dict.values model)
 
 
+viewBug : Bug -> Html Msg
+viewBug bug =
+  let
+    bugUrl =
+      "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
+
+    stateString =
+      Maybe.withDefault "Unknown" (Maybe.map toString bug.state)
+
+    prioString =
+      Maybe.withDefault "Untriaged" (Maybe.map toString bug.priority)
+  in
+    div
+      [ class "bug" ]
+      [ div
+          [ class "bug-header" ]
+          [ div [] [ text <| bug.product ++ " :: " ++ bug.component ]
+          , a
+              [ target "_blank", href bugUrl ]
+              [ text <| "#" ++ (toString bug.id) ]
+          ]
+      , div
+          [ class "bug-body" ]
+          [ a [ target "_blank", href bugUrl ] [ text bug.summary ] ]
+      , div
+          [ class "bug-footer" ]
+          [ div [] [ text stateString ]
+          , div [] [ text prioString ]
+          ]
+
+      ]
 
 
 -- HTTP
@@ -147,15 +173,16 @@ fetch =
 
 bugDecoder : Decoder (Dict Int Bug)
 bugDecoder =
-  -- In theory, I should be able to do this with Json.Decode.Extra.dict2...
-  at ["bugs"] (list decBug)
-    |> Json.Decode.map (List.map (\bug -> (,) bug.id bug))
-    |> Json.Decode.map Dict.fromList
+  let
+    asTuple : Bug -> (Int, Bug)
+    asTuple bug = (bug.id, bug)
 
-
-decId : Decoder Int
-decId =
-  "id" := int
+    toDict : List Bug -> Dict Int Bug
+    toDict bugs =
+      Dict.fromList << List.map asTuple <| bugs
+  in
+    at ["bugs"] (list decBug)
+      |> Json.Decode.map toDict
 
 
 decBug : Decoder Bug
