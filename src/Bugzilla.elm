@@ -2,7 +2,8 @@ module Bugzilla exposing (Model, Msg, update, view, init)
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (id, class, attribute, target, href, title)
+import Html.Attributes exposing (id, class, attribute, target, href, title, classList)
+import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
 import Json.Decode.Extra exposing ((|:), dict2)
@@ -15,12 +16,18 @@ import Task
 
 
 type alias Model =
-  Dict Int Bug
+  { bugs : Dict Int Bug
+  , sort : (SortField, SortDir)
+  }
 
 
 init : (Model, Cmd Msg)
 init =
-  (Dict.empty, fetch)
+  (,)
+    { bugs = Dict.empty
+    , sort = (ProductComponent, Asc)
+    }
+    fetch
 
 
 -- TYPES
@@ -61,12 +68,24 @@ type Priority
   | PX
 
 
+type SortField
+  = Id
+  | ProductComponent
+  | Status
+
+
+type SortDir
+  = Asc
+  | Desc
+
+
 -- UPDATE
 
 
 type Msg
   = FetchOk (Dict Int Bug)
   | FetchFail Http.Error
+  | SortBy SortField
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -76,7 +95,25 @@ update msg model =
       (model, Cmd.none)
 
     FetchOk bugs ->
-      (bugs, Cmd.none)
+      ({ model | bugs = bugs }, Cmd.none)
+
+    SortBy field ->
+      let
+        (curField, curDir) =
+          model.sort
+
+        toggle direction =
+          case direction of
+            Asc ->
+              Desc
+
+            Desc ->
+              Asc
+      in
+        if field == curField then
+          ({ model | sort = (field, toggle curDir) }, Cmd.none)
+        else
+          ({ model | sort = (field, Asc) }, Cmd.none)
 
 
 -- VIEW
@@ -85,24 +122,86 @@ update msg model =
 view : Model -> Html Msg
 view model =
   let
-    bogusSortBar =
+    sortWidget : (SortField, String) -> Html Msg
+    sortWidget (field, label) =
+      button
+        [ onClick <| SortBy field
+        , classList
+            [ ("as-text", True)
+            , ("active", field == fst model.sort)
+            , ("sort-asc", model.sort == (field, Asc))
+            , ("sort-desc", model.sort == (field, Desc))
+            ]
+        ]
+        [ text label ]
+
+    sortBar =
       div
         [ id "sort-bar"  ]
-        [ text "Sort: "
-        , strong [] [ text "ID ▼"  ]
-        , text ", "
-        , text "Product/Component"
-        , text ", "
-        , text "Status"
-        ]
+        ( [ (Id, "Bug Number")
+          , (ProductComponent, "Product / Component")
+          , (Status, "Status")
+          ]
+          |> List.map sortWidget
+          |> List.intersperse (text ", ")
+          |> (::) (text "Sort by: ")
+        )
   in
     div
       [ id "bugs" ]
-      [ bogusSortBar
+      [ sortBar
       , ul
           [ id "bugs" ]
-          (List.map (\bug -> li [] [viewBug bug]) <| Dict.values model)
+          (List.map (\bug -> li [] [viewBug bug])
+            <| sortBugs model.sort
+            <| Dict.values model.bugs)
       ]
+
+
+sortBugs : (SortField, SortDir) -> List Bug -> List Bug
+sortBugs (field, direction) bugs =
+  let
+    statusOrd state =
+      case state of
+        Nothing -> 0
+
+        Just Unconfirmed -> 1
+        Just New -> 1
+        Just Reopened -> 1
+
+        Just Assigned -> 2
+
+        Just (Resolved (Duplicate _)) -> 3
+        Just (Verified (Duplicate _)) -> 3
+
+        Just (Resolved Fixed) -> 4
+        Just (Verified Fixed) -> 4
+
+        Just (Resolved Incomplete) -> 5
+        Just (Verified Incomplete) -> 5
+
+        Just (Resolved Invalid) -> 6
+        Just (Verified Invalid) -> 6
+
+        Just (Resolved WontFix) -> 7
+        Just (Verified WontFix) -> 7
+
+        Just (Resolved WorksForMe) -> 8
+        Just (Verified WorksForMe) -> 8
+
+    fn =
+      case field of
+        Id ->
+          List.sortBy .id
+
+        ProductComponent ->
+          List.sortBy (\x -> (x.product, x.component, x.summary))
+
+        Status ->
+          List.sortBy (statusOrd << .state)
+  in
+     fn bugs
+       |> if direction == Desc then List.reverse else identity
 
 
 viewBug : Bug -> Html Msg
@@ -128,7 +227,13 @@ viewBug bug =
         Just Assigned ->
           "Assigned"
 
-        Just _ ->
+        Just New ->
+          ""
+
+        Just Unconfirmed ->
+          ""
+
+        Just Reopened ->
           ""
 
         Nothing ->
