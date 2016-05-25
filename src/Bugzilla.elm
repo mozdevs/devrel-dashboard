@@ -31,9 +31,9 @@ init : (Model, Cmd Msg)
 init =
   (,)
     { bugs = Dict.empty
-    , sort = (ProductComponent, Asc)
+    , sort = (Priority, Asc)
     , showClosed = False
-    , showPriorities = [ Just P1 ]
+    , showPriorities = [ Just P1, Just P2, Just P3 ]
     , filterText = ""
     , networkStatus = Fetching
     }
