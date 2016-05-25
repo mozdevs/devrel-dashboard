@@ -1,4 +1,5 @@
-module Bugzilla exposing (Model, Msg, update, view, init)
+-- module Bugzilla exposing (Model, Msg, update, view, init)
+module Bugzilla exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (..)
@@ -19,6 +20,7 @@ type alias Model =
   { bugs : Dict Int Bug
   , sort : (SortField, SortDir)
   , showClosed : Bool
+  , showPriorities : List (Maybe Priority)
   }
 
 
@@ -27,7 +29,8 @@ init =
   (,)
     { bugs = Dict.empty
     , sort = (ProductComponent, Asc)
-    , showClosed = True
+    , showClosed = False
+    , showPriorities = [ Just P1 ]
     }
     fetch
 
@@ -90,6 +93,7 @@ type Msg
   | FetchFail Http.Error
   | SortBy SortField
   | ToggleShowClosed
+  | TogglePriority (Maybe Priority)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -121,6 +125,16 @@ update msg model =
 
     ToggleShowClosed ->
       ({ model | showClosed = not model.showClosed }, Cmd.none)
+
+    TogglePriority priority ->
+      let
+        newPriorities =
+          if List.member priority model.showPriorities then
+            List.filter ((/=) priority) model.showPriorities
+          else
+            priority :: model.showPriorities
+      in
+      ({ model | showPriorities = newPriorities }, Cmd.none)
 
 
 -- VIEW
@@ -154,19 +168,43 @@ view model =
         , text "Show Closed Bugs"
         ]
 
+    prioWidget (priority, labelText) =
+      label
+        []
+        [ input
+            [ type' "checkbox" 
+            , checked (List.member priority model.showPriorities)
+            , onCheck <| always (TogglePriority priority)
+            ]
+            []
+        , text labelText
+        ]
+
     sortBar =
       div
         [ id "sort-bar"  ]
-        [ closedWidget
+        [ div
+            [ class "filter-priorities" ]
+            ( [ (Just P1, "P1")
+              , (Just P2, "P2")
+              , (Just P3, "P3")
+              , (Just PX, "PX")
+              , (Nothing, "Untriaged")
+              ]
+                |> List.map prioWidget
+                |> List.intersperse (text ", ")
+                |> (::) (text "Priorities: ")
+            )
+        , closedWidget
         , div
             []
-            ( [ (Id, "Bug Number")
+            ( [ (Id, "Number")
               , (ProductComponent, "Product / Component")
               , (Status, "Status")
               ]
               |> List.map sortWidget
               |> List.intersperse (text ", ")
-              |> (::) (text "Sort by: ")
+              |> (::) (text "Sort: ")
             )
         ]
   in
@@ -177,6 +215,11 @@ view model =
           [ id "bugs" ]
           ( List.map (\bug -> li [] [viewBug bug])
               <| sortBugs model.sort
+              <| List.filter
+                  ( \bug ->
+                      List.isEmpty model.showPriorities
+                      || List.member bug.priority model.showPriorities
+                  )
               <| List.filter (\bug -> bug.open || model.showClosed)
               <| Dict.values model.bugs
           )
@@ -223,7 +266,7 @@ sortBugs (field, direction) bugs =
           List.sortBy (\x -> (x.product, x.component, x.summary))
 
         Status ->
-          List.sortBy (statusOrd << .state)
+          List.sortBy (\x -> (statusOrd x.state, x.product, x.component, x.summary))
   in
      fn bugs
        |> if direction == Desc then List.reverse else identity

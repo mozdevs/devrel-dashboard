@@ -46,10 +46,20 @@ ul { list-style-type: none; padding: 0; }
   display: flex;
   justify-content: space-between;
   padding: 0.25em 0.75em;
+  flex-wrap: wrap;
 }
 
 #sort-bar input[type="checkbox"] {
   vertical-align: top;
+}
+
+.filter-priorities {
+  flex-basis: 100%;
+  text-align: right;
+}
+
+.filter-priorities label {
+  display: inline-block;
 }
 
 button.as-text {
