@@ -14,11 +14,19 @@ Work in progress at https://mozdevs.github.io/devrel-dashboard/
 
 Submit pull requests to the `master` branch.
 
-To update GitHub Pages, make sure your `master` branch is up to date, then:
+To update GitHub Pages:
 
-1. `git checkout gh-pages`
-2. `git merge --no-commit master`
-3. `npm run build`
-4. `git add dist/`
-5. `git commit`
-6. `git push`
+```
+export REMOTE="origin"
+
+git checkout master &&
+git pull --ff-only $REMOTE &&
+git checkout gh-pages &&
+git pull --ff-only $REMOTE &&
+git merge --no-commit master &&
+npm install &&
+npm run build &&
+git add dist &&
+git commit &&
+git push $REMOTE gh-pages:gh-pages
+```

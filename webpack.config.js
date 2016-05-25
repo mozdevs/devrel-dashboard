@@ -1,26 +1,42 @@
 const path = require('path');
 const webpack = require('webpack');
 
-module.exports = {
-  entry: [
-    './index',
-  ],
+const config = {
+  entry: path.join(__dirname, 'src/index.js'),
+
   output: {
-    path: path.join(__dirname, 'dist'),
-    publicPath: "dist/",
-    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist/'),
+    publicPath: 'dist/',
+    filename: 'bundle.js'
   },
-  plugins: [
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-  ],
+
+  resolve: {
+    moduleDirectories: ['node_modules'],
+    extensions: ['', '.js', '.elm']
+  },
+
   module: {
     loaders: [
       {
-        test: /\.js$/,
-        loaders: ['babel'],
-        exclude: /node_modules/,
-        include: __dirname
+        test: /\.elm$/,
+        exclude: [/elm-stuff/, /node_modules/],
+        loader: 'elm-hot!elm-webpack?warn=true'
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
       }
     ]
-  }
+  },
 }
+
+if (process.env.npm_lifecycle_event === 'build') {
+  config.plugins = config.plugins || [];
+
+  config.plugins = config.plugins.concat(
+    new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } }),
+    new webpack.LoaderOptionsPlugin({ minimize: true })
+  );
+}
+
+module.exports = config;

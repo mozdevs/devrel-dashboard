@@ -1,0 +1,229 @@
+/* Global */
+
+body {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-family: sans-serif;
+  color: #222;
+  background-color: #b7cfea;
+  margin: 0;
+}
+
+button {
+  font-family: sans-serif;
+}
+
+a:link, a:visited, a:hover, a:active { text-decoration: none; }
+a:hover, a:focus { text-decoration: underline; }
+
+.oneline {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+abbr {
+  cursor: help;
+  border-bottom: 1px dotted;
+  text-decoration: none;
+}
+
+/* Header */
+
+#header {
+  background-color: #fff;
+  border-bottom: 1px solid red;
+  padding: 0.25em 1em;
+}
+
+#header h1 {
+  font-size: 1.4em;
+  margin: 0;
+}
+
+/* Sorting Bar */
+
+#sort-bar {
+  margin-top: 1em;
+  padding: 0 0.4em;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  padding: 1em 0.75em .25em;
+  flex-wrap: wrap;
+  flex-direction: row-reverse;
+  margin-bottom: 1em;
+  background-color: #fea;
+  border-radius: 4px;
+}
+
+#sort-bar > * {
+  margin-bottom: 0.5em;
+}
+
+#sort-bar input[type="checkbox"] {
+  vertical-align: top;
+}
+
+.filter-text {
+  flex-basis: 100%;
+  padding: 3px;
+  font-size: 1em;
+}
+
+.filter-priorities label {
+  display: inline-block;
+}
+
+button.as-text {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+button.as-text:hover {
+  text-decoration: underline;
+}
+
+button.as-text::-moz-focus-inner {
+  padding: 0;
+  border: none;
+}
+
+button.active {
+  font-weight: bold;
+}
+
+.sort-asc::after {
+  content: " ▼"
+}
+
+.sort-desc::after {
+  content: " ▲"
+}
+
+/* Network messages */
+
+.loading, .loading-error, .no-bugs {
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #999;
+  background-color: white;
+}
+
+.loading {
+  animation: pulse 1s ease-in-out alternate infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: .5; }
+  100% { opacity: 1; }
+}
+
+.loading-error {
+  color: red;
+}
+
+
+/* Bug List */
+
+.bugs {
+  margin: 0 auto 5em;
+  max-width: 40em;
+}
+
+.bug {
+  padding: 0.25em 0.5em 0.25em 1em;
+  border: 1px solid #999;
+  border-bottom-width: 0;
+  background-color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.bug[data-open="False"] {
+  background-color: #eee;
+}
+
+.bug:hover {
+  background-color: #ffd;
+}
+
+.bug-header, .bug-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.bugs li:last-child .bug {
+  border-bottom-width: 1px;
+}
+
+.bug-body a {
+  font-weight: bold;
+  color: black;
+}
+
+.bug-footer, .bug-header {
+  color: #333;
+}
+
+/* Bug Status Banners */
+
+.bug[data-status="Assigned"]::after,
+.bug[data-status="Fixed"]::after,
+.bug[data-status="WorksForMe"]::after,
+.bug[data-status="Duplicate"]::after,
+.bug[data-status="Invalid"]::after,
+.bug[data-status="Incomplete"]::after,
+.bug[data-status="WontFix"]::after {
+  content: attr(data-status);
+  width: 13em; padding: 0 0 0 3em;
+  position: absolute; right: -3.5em; top: 3em;
+  transform: rotate(45deg);
+  background-color: transparent; color: transparent; font-weight: bold; font-size: .75rem;
+  text-align: left;
+  border: 1px solid transparent;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.bug[data-status="Assigned"]::after   { background-color: #7f5; color: black; border-color: black; }
+
+.bug[data-status="Fixed"]::after      { background-color: #08f; color: white; border-color: black; }
+.bug[data-status="WorksForMe"]::after { background-color: #80f; color: white; border-color: black; }
+.bug[data-status="Duplicate"]::after  { background-color: #fff; color: black; border-color: black; }
+
+.bug[data-status="Invalid"]::after    { background-color: #ff0; color: black; border-color: black; }
+.bug[data-status="Incomplete"]::after { background-color: #f00; color: white; border-color: black; }
+
+.bug[data-status="WontFix"]::after    { background-color: #555; color: white; border-color: black; }
+
+/* Bug Priority Markers */
+
+.bug[data-priority="P1"]::before,
+.bug[data-priority="P2"]::before,
+.bug[data-priority="P3"]::before,
+.bug[data-priority="PX"]::before,
+.bug[data-priority="Untriaged"]::before {
+  position: absolute;
+  pointer-events: none;
+}
+
+.bug[data-priority="P1"]::before        { content: "»"; color: #f00; font-size: 1.2rem; top: 1.10rem; left: 0.10rem; }
+.bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.25rem; }
+.bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.05rem; }
+.bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.25rem; }
+
+.priority-filter-p1::before        { content: "» "; color: #f00; }
+.priority-filter-p2::before        { content: "› "; color: #00f; }
+.priority-filter-p3::before        { content: "\2004 "; color: #000; }
+.priority-filter-px::before        { content: "✕ "; color: #000; }
+.priority-filter-untriaged::before { content: "? "; color: #000; }
