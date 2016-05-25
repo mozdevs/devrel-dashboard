@@ -29,15 +29,15 @@ type alias Model =
 
 init : (Model, Cmd Msg)
 init =
-  (,)
-    { bugs = Dict.empty
+  ( { bugs = Dict.empty
     , sort = (Priority, Asc)
     , showClosed = False
     , showPriorities = [ Just P1, Just P2, Just P3 ]
     , filterText = ""
     , networkStatus = Fetching
     }
-    fetch
+  , fetch
+  )
 
 
 -- TYPES
@@ -427,7 +427,7 @@ fetch =
       Http.url
         -- "http://localhost:3000/db"
         "https://bugzilla.mozilla.org/rest/bug"
-        [ (,) "keywords" "DevAdvocacy"
+        [ ("keywords", "DevAdvocacy")
         , (,)
             "include_fields"
             (String.join ","
@@ -531,10 +531,10 @@ decState (status, resolution, dupeOf) =
           Just Reopened
 
         "RESOLVED" ->
-          Maybe.map (\x -> Resolved x) resolution'
+          Maybe.map Resolved resolution'
 
         "VERIFIED" ->
-          Maybe.map (\x -> Verified x) resolution'
+          Maybe.map Verified resolution'
 
         _ ->
           Nothing
@@ -552,7 +552,7 @@ decPrio whiteboard =
       Regex.find (Regex.AtMost 1) pattern (String.toLower whiteboard)
 
     submatches =
-      List.map (\x -> x.submatches) matches
+      List.map .submatches matches
 
     priority =
       case submatches of

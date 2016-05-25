@@ -28,5 +28,6 @@ npm install &&
 npm run build &&
 git add dist &&
 git commit &&
-git push $REMOTE gh-pages:gh-pages
+git push $REMOTE gh-pages:gh-pages &&
+git checkout master
 ```
