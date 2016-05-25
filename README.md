@@ -20,9 +20,9 @@ To update GitHub Pages:
 export REMOTE="origin"
 
 git checkout master &&
-git pull --ff-only $REMOTE &&
+git pull --ff-only $REMOTE master &&
 git checkout gh-pages &&
-git pull --ff-only $REMOTE &&
+git pull --ff-only $REMOTE gh-pages &&
 git merge --no-commit master &&
 npm install &&
 npm run build &&

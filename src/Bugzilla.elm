@@ -272,7 +272,7 @@ view model =
             [ sortBar
             , case model.networkStatus of
                 Fetching ->
-                    div [ class "loading" ] [ text "Fetching data from Bugilla..." ]
+                    div [ class "loading" ] [ text "Fetching data from Bugzilla..." ]
 
                 Failed ->
                     div [ class "loading-error" ] [ text "Error fetching data. Please refresh." ]
