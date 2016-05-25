@@ -2,8 +2,8 @@ module Bugzilla exposing (Model, Msg, update, view, init)
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (id, class, attribute, target, href, title, classList)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (id, class, attribute, target, href, title, classList, type', checked)
+import Html.Events exposing (onClick, onCheck)
 import Http
 import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
 import Json.Decode.Extra exposing ((|:), dict2)
@@ -18,6 +18,7 @@ import Task
 type alias Model =
   { bugs : Dict Int Bug
   , sort : (SortField, SortDir)
+  , showClosed : Bool
   }
 
 
@@ -26,6 +27,7 @@ init =
   (,)
     { bugs = Dict.empty
     , sort = (ProductComponent, Asc)
+    , showClosed = True
     }
     fetch
 
@@ -40,6 +42,7 @@ type alias Bug =
   , component : String
   , state : Maybe State
   , priority: Maybe Priority
+  , open : Bool
   }
 
 
@@ -86,6 +89,7 @@ type Msg
   = FetchOk (Dict Int Bug)
   | FetchFail Http.Error
   | SortBy SortField
+  | ToggleShowClosed
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -115,6 +119,9 @@ update msg model =
         else
           ({ model | sort = (field, Asc) }, Cmd.none)
 
+    ToggleShowClosed ->
+      ({ model | showClosed = not model.showClosed }, Cmd.none)
+
 
 -- VIEW
 
@@ -135,26 +142,44 @@ view model =
         ]
         [ text label ]
 
+    closedWidget =
+      label
+        []
+        [ input
+            [ type' "checkbox"
+            , checked model.showClosed
+            , onCheck <| always ToggleShowClosed
+            ]
+            []
+        , text "Show Closed Bugs"
+        ]
+
     sortBar =
       div
         [ id "sort-bar"  ]
-        ( [ (Id, "Bug Number")
-          , (ProductComponent, "Product / Component")
-          , (Status, "Status")
-          ]
-          |> List.map sortWidget
-          |> List.intersperse (text ", ")
-          |> (::) (text "Sort by: ")
-        )
+        [ closedWidget
+        , div
+            []
+            ( [ (Id, "Bug Number")
+              , (ProductComponent, "Product / Component")
+              , (Status, "Status")
+              ]
+              |> List.map sortWidget
+              |> List.intersperse (text ", ")
+              |> (::) (text "Sort by: ")
+            )
+        ]
   in
     div
       [ id "bugs" ]
       [ sortBar
       , ul
           [ id "bugs" ]
-          (List.map (\bug -> li [] [viewBug bug])
-            <| sortBugs model.sort
-            <| Dict.values model.bugs)
+          ( List.map (\bug -> li [] [viewBug bug])
+              <| sortBugs model.sort
+              <| List.filter (\bug -> bug.open || model.showClosed)
+              <| Dict.values model.bugs
+          )
       ]
 
 
@@ -244,21 +269,10 @@ viewBug bug =
 
     pcString =
       bug.product ++ " :: " ++ bug.component
-
-    open =
-      case bug.state of
-        Just (Resolved _) ->
-          False
-
-        Just (Verified _) ->
-          False
-
-        _ ->
-          True
   in
     div
       [ class "bug"
-      , attribute "data-open" (toString open)
+      , attribute "data-open" (toString bug.open)
       , attribute "data-status" stateString
       , attribute "data-priority" prioString
       ]
@@ -338,6 +352,9 @@ decBug =
     |: andThen -- "priority"
          ("whiteboard" := string)
          decPrio
+    |: andThen -- "open"
+         ("status" := string)
+         decOpen
 
 
 decState : (String, String, Maybe Int) -> Decoder (Maybe State)
@@ -413,3 +430,7 @@ decPrio whiteboard =
         _ -> Nothing
   in
     succeed priority
+
+decOpen : String -> Decoder Bool
+decOpen status =
+  succeed (status /= "RESOLVED" && status /= "VERIFIED")

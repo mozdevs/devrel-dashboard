@@ -40,10 +40,16 @@ ul { list-style-type: none; padding: 0; }
 /* Sorting Bar */
 
 #sort-bar {
-  text-align: right;
   margin-top: 1em;
   padding: 0 0.4em;
   font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25em 0.75em;
+}
+
+#sort-bar input[type="checkbox"] {
+  vertical-align: top;
 }
 
 button.as-text {
