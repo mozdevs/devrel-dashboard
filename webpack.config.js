@@ -2,9 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const config = {
-  entry: [
-    path.join(__dirname, 'src/index.js')
-  ],
+  entry: path.join(__dirname, 'src/index.js'),
 
   output: {
     path: path.resolve(__dirname, 'dist/'),
@@ -32,8 +30,10 @@ const config = {
   },
 }
 
-if (process.env.NODE_ENV === 'production') {
-  config.plugins = (config.plugins || []).concat(
+if (process.env.npm_lifecycle_event === 'build') {
+  config.plugins = config.plugins || [];
+
+  config.plugins = config.plugins.concat(
     new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } }),
     new webpack.LoaderOptionsPlugin({ minimize: true })
   );
