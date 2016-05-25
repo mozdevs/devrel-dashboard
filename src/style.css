@@ -108,6 +108,28 @@ button.active {
   content: " ▲"
 }
 
+/* Network messages */
+
+.loading, .loading-error {
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #999;
+  background-color: white;
+}
+
+.loading {
+  animation: pulse 1s ease-in-out alternate infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: .5; }
+  100% { opacity: 1; }
+}
+
+.loading-error {
+  color: red;
+}
+
 
 /* Bug List */
 

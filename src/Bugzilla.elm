@@ -23,6 +23,7 @@ type alias Model =
   , showClosed : Bool
   , showPriorities : List (Maybe Priority)
   , filterText : String
+  , networkStatus : Network
   }
 
 
@@ -34,6 +35,7 @@ init =
     , showClosed = False
     , showPriorities = [ Just P1 ]
     , filterText = ""
+    , networkStatus = Fetching
     }
     fetch
 
@@ -89,6 +91,12 @@ type SortDir
   | Desc
 
 
+type Network
+  = Fetching
+  | Loaded
+  | Failed
+
+
 -- UPDATE
 
 
@@ -105,10 +113,10 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     FetchFail _ ->
-      (model, Cmd.none)
+      ({ model | networkStatus = Failed }, Cmd.none)
 
     FetchOk bugs ->
-      ({ model | bugs = bugs }, Cmd.none)
+      ({ model | bugs = bugs, networkStatus = Loaded }, Cmd.none)
 
     SortBy field ->
       let
@@ -248,29 +256,40 @@ view model =
               |> (::) (text "Sort: ")
             )
         ]
+
+    matchesFilterText bug =
+      List.any
+        (String.contains <| String.toLower model.filterText)
+        [ String.toLower (bug.product ++ " :: " ++ bug.component)
+        , String.toLower bug.summary
+        ]
+
+    matchesPriority bug =
+      List.isEmpty model.showPriorities || List.member bug.priority model.showPriorities
+
+    matchesShowOpen bug =
+      bug.open || model.showClosed
   in
     div
       [ class "bugs" ]
       [ sortBar
-      , ul
-          [ id "bugs" ]
-          ( List.map (\bug -> li [] [viewBug bug])
-              <| sortBugs model.sort
-              <| List.filter
-                  ( \bug ->
-                      List.any (String.contains <| String.toLower model.filterText)
-                        [ String.toLower (bug.product ++ " :: " ++ bug.component)
-                        , String.toLower bug.summary
-                        ]
-                  )
-              <| List.filter
-                  ( \bug ->
-                      List.isEmpty model.showPriorities
-                      || List.member bug.priority model.showPriorities
-                  )
-              <| List.filter (\bug -> bug.open || model.showClosed)
-              <| Dict.values model.bugs
-          )
+      , case model.networkStatus of
+          Fetching ->
+            div [ class "loading" ] [ text "Fetching data from Bugilla..." ]
+
+          Failed ->
+            div [ class "loading-error" ] [ text "Error fetching data. Please refresh." ]
+
+          Loaded ->
+            ul
+              []
+              ( List.map (\bug -> li [] [viewBug bug])
+                  <| sortBugs model.sort
+                  <| List.filter matchesFilterText
+                  <| List.filter matchesPriority
+                  <| List.filter matchesShowOpen
+                  <| Dict.values model.bugs
+              )
       ]
 
 
@@ -401,8 +420,8 @@ fetch =
   let
     url =
       Http.url
-        -- "https://bugzilla.mozilla.org/rest/bug"
-        "http://localhost:3000/db"
+        -- "http://localhost:3000/db"
+        "https://bugzilla.mozilla.org/rest/bug"
         [ (,) "keywords" "DevAdvocacy"
         , (,)
             "include_fields"
@@ -418,8 +437,15 @@ fetch =
               ])
         ]
   in
-    Task.perform FetchFail FetchOk (Http.get bugDecoder url)
-
+    Task.perform FetchFail FetchOk
+      <| Http.fromJson bugDecoder
+      <| Http.send
+           Http.defaultSettings
+           { verb = "GET"
+           , headers = [("Accept", "application/json")]
+           , url = url
+           , body = Http.empty
+           }
 
 -- JSON
 
