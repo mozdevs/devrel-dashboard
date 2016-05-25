@@ -70,9 +70,10 @@ abbr {
   vertical-align: top;
 }
 
-.filter-products {
+.filter-text {
   flex-basis: 100%;
   padding: 3px;
+  font-size: 1em;
 }
 
 .filter-priorities label {
@@ -110,7 +111,7 @@ button.active {
 
 /* Network messages */
 
-.loading, .loading-error {
+.loading, .loading-error, .no-bugs {
   text-align: center;
   font-weight: bold;
   border: 1px solid #999;

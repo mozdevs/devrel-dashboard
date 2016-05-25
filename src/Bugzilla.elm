@@ -177,11 +177,11 @@ view model =
         []
         [ input
             [ type' "checkbox"
-            , checked model.showClosed
+            , checked <| not model.showClosed
             , onCheck <| always ToggleShowClosed
             ]
             []
-        , text "Show Closed Bugs"
+        , text "Hide Closed Bugs"
         ]
 
     prioWidget (priority, labelText, meaning) =
@@ -215,7 +215,7 @@ view model =
       div
         [ id "sort-bar"  ]
         [ input
-            [ class "filter-products"
+            [ class "filter-text"
             , attribute "list" "datalist-products"
             , placeholder "Filter Bugs"
             , onInput FilterText
@@ -281,15 +281,20 @@ view model =
             div [ class "loading-error" ] [ text "Error fetching data. Please refresh." ]
 
           Loaded ->
-            ul
-              []
-              ( List.map (\bug -> li [] [viewBug bug])
+            let
+              bugs =
+                List.map (\bug -> li [] [viewBug bug])
                   <| sortBugs model.sort
                   <| List.filter matchesFilterText
                   <| List.filter matchesPriority
                   <| List.filter matchesShowOpen
                   <| Dict.values model.bugs
-              )
+            in
+              if List.isEmpty bugs then
+                div [ class "no-bugs" ] [ text "No bugs match your filter settings." ]
+              else
+                ul [] bugs
+
       ]
 
 
