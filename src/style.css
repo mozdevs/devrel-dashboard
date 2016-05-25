@@ -22,7 +22,16 @@ a:hover, a:focus { text-decoration: underline; }
   overflow: hidden;
 }
 
-ul { list-style-type: none; padding: 0; }
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+abbr {
+  cursor: help;
+  border-bottom: 1px dotted;
+  text-decoration: none;
+}
 
 /* Header */
 
@@ -45,17 +54,25 @@ ul { list-style-type: none; padding: 0; }
   font-size: 0.8rem;
   display: flex;
   justify-content: space-between;
-  padding: 0.25em 0.75em;
+  padding: 1em 0.75em .25em;
   flex-wrap: wrap;
+  flex-direction: row-reverse;
+  margin-bottom: 1em;
+  background-color: #fea;
+  border-radius: 4px;
+}
+
+#sort-bar > * {
+  margin-bottom: 0.5em;
 }
 
 #sort-bar input[type="checkbox"] {
   vertical-align: top;
 }
 
-.filter-priorities {
+.filter-products {
   flex-basis: 100%;
-  text-align: right;
+  padding: 3px;
 }
 
 .filter-priorities label {

@@ -3,12 +3,13 @@ module Bugzilla exposing (..)
 
 import Dict exposing (Dict)
 import Html exposing (..)
-import Html.Attributes exposing (id, class, attribute, target, href, title, classList, type', checked)
-import Html.Events exposing (onClick, onCheck)
+import Html.Attributes exposing (id, class, attribute, target, href, title, classList, type', checked, value, placeholder)
+import Html.Events exposing (onClick, onCheck, onInput)
 import Http
 import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
 import Json.Decode.Extra exposing ((|:), dict2)
 import Regex
+import Set
 import String
 import Task
 
@@ -21,6 +22,7 @@ type alias Model =
   , sort : (SortField, SortDir)
   , showClosed : Bool
   , showPriorities : List (Maybe Priority)
+  , filterText : String
   }
 
 
@@ -31,6 +33,7 @@ init =
     , sort = (ProductComponent, Asc)
     , showClosed = False
     , showPriorities = [ Just P1 ]
+    , filterText = ""
     }
     fetch
 
@@ -78,6 +81,7 @@ type SortField
   = Id
   | ProductComponent
   | Status
+  | Priority
 
 
 type SortDir
@@ -94,6 +98,7 @@ type Msg
   | SortBy SortField
   | ToggleShowClosed
   | TogglePriority (Maybe Priority)
+  | FilterText String
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -136,6 +141,9 @@ update msg model =
       in
       ({ model | showPriorities = newPriorities }, Cmd.none)
 
+    FilterText s ->
+      ({ model | filterText = s }, Cmd.none)
+
 
 -- VIEW
 
@@ -168,28 +176,50 @@ view model =
         , text "Show Closed Bugs"
         ]
 
-    prioWidget (priority, labelText) =
+    prioWidget (priority, labelText, meaning) =
       label
-        []
+        [ class "priority-widget"
+        , title <| labelText ++ "—" ++ meaning
+        ]
         [ input
             [ type' "checkbox" 
             , checked (List.member priority model.showPriorities)
             , onCheck <| always (TogglePriority priority)
             ]
             []
-        , text labelText
+        , if meaning /= "" then
+             abbr [ title <| labelText ++ "—" ++ meaning ] [ text labelText ]
+          else
+             text labelText
         ]
 
     sortBar =
       div
         [ id "sort-bar"  ]
-        [ div
+        [ input
+            [ class "filter-products"
+            , attribute "list" "datalist-products"
+            , placeholder "Filter Bugs"
+            , onInput FilterText
+            ]
+            []
+        , datalist
+            [ id "datalist-products" ]
+            ( model.bugs
+              |> Dict.values
+              |> List.map (\bug -> [bug.product, bug.product ++ " :: " ++ bug.component])
+              |> List.concat
+              |> Set.fromList
+              |> Set.toList
+              |> List.map (\product -> option [ value product ] [])
+            )
+        , div
             [ class "filter-priorities" ]
-            ( [ (Just P1, "P1")
-              , (Just P2, "P2")
-              , (Just P3, "P3")
-              , (Just PX, "PX")
-              , (Nothing, "Untriaged")
+            ( [ (Just P1, "P1", "Critical")
+              , (Just P2, "P2", "Major")
+              , (Just P3, "P3", "Minor")
+              , (Just PX, "PX", "Ignore")
+              , (Nothing, "Untriaged", "")
               ]
                 |> List.map prioWidget
                 |> List.intersperse (text ", ")
@@ -201,6 +231,7 @@ view model =
             ( [ (Id, "Number")
               , (ProductComponent, "Product / Component")
               , (Status, "Status")
+              , (Priority, "Priority")
               ]
               |> List.map sortWidget
               |> List.intersperse (text ", ")
@@ -215,6 +246,13 @@ view model =
           [ id "bugs" ]
           ( List.map (\bug -> li [] [viewBug bug])
               <| sortBugs model.sort
+              <| List.filter
+                  ( \bug ->
+                      List.any (String.contains <| String.toLower model.filterText)
+                        [ String.toLower (bug.product ++ " :: " ++ bug.component)
+                        , String.toLower bug.summary
+                        ]
+                  )
               <| List.filter
                   ( \bug ->
                       List.isEmpty model.showPriorities
@@ -257,6 +295,14 @@ sortBugs (field, direction) bugs =
         Just (Resolved WorksForMe) -> 8
         Just (Verified WorksForMe) -> 8
 
+    prioOrd priority =
+      case priority of
+        Just P1 -> 1
+        Just P2 -> 2
+        Just P3 -> 3
+        Just PX -> 4
+        Nothing -> 5
+
     fn =
       case field of
         Id ->
@@ -267,6 +313,9 @@ sortBugs (field, direction) bugs =
 
         Status ->
           List.sortBy (\x -> (statusOrd x.state, x.product, x.component, x.summary))
+
+        Priority ->
+          List.sortBy (\x -> (prioOrd x.priority, x.product, x.component, x.summary))
   in
      fn bugs
        |> if direction == Desc then List.reverse else identity
