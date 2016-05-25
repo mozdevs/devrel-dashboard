@@ -111,7 +111,7 @@ button.active {
 
 /* Bug List */
 
-#bugs {
+.bugs {
   margin: 0 auto 5em;
   max-width: 40em;
 }
@@ -139,7 +139,7 @@ button.active {
   font-size: 0.75rem;
 }
 
-#bugs li:last-child .bug {
+.bugs li:last-child .bug {
   border-bottom-width: 1px;
 }
 

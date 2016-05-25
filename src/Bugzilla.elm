@@ -240,7 +240,7 @@ view model =
         ]
   in
     div
-      [ id "bugs" ]
+      [ class "bugs" ]
       [ sortBar
       , ul
           [ id "bugs" ]
