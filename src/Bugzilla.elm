@@ -177,21 +177,31 @@ view model =
         ]
 
     prioWidget (priority, labelText, meaning) =
-      label
-        [ class "priority-widget"
-        , title <| labelText ++ "—" ++ meaning
-        ]
-        [ input
-            [ type' "checkbox" 
-            , checked (List.member priority model.showPriorities)
-            , onCheck <| always (TogglePriority priority)
-            ]
-            []
-        , if meaning /= "" then
-             abbr [ title <| labelText ++ "—" ++ meaning ] [ text labelText ]
-          else
-             text labelText
-        ]
+      let
+        prioString =
+          Maybe.withDefault "Untriaged" (Maybe.map toString priority)
+      in
+        label
+          [ class "priority-widget"
+          , title <| labelText ++ "—" ++ meaning
+          ]
+          [ input
+              [ type' "checkbox" 
+              , checked (List.member priority model.showPriorities)
+              , onCheck <| always (TogglePriority priority)
+              ]
+              []
+          , if meaning /= "" then
+               abbr
+                 [ class <| String.toLower ("priority-filter-" ++ prioString)
+                 , title <| labelText ++ "—" ++ meaning
+                 ]
+                 [ text labelText ]
+            else
+               span
+                 [ class <| String.toLower ("priority-filter-" ++ prioString) ]
+                 [ text labelText ]
+          ]
 
     sortBar =
       div

@@ -193,3 +193,9 @@ button.active {
 .bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.25rem; }
 .bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.05rem; }
 .bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.25rem; }
+
+.priority-filter-p1::before        { content: "» "; color: #f00; }
+.priority-filter-p2::before        { content: "› "; color: #00f; }
+.priority-filter-p3::before        { content: "\2004 "; color: #000; }
+.priority-filter-px::before        { content: "✕ "; color: #000; }
+.priority-filter-untriaged::before { content: "? "; color: #000; }
