@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "webpack-dev-server -d --hot --quiet",
+    "start": "webpack-dev-server -d --hot",
     "build": "webpack --define process.env.NODE_ENV='\"production\"'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,7 +17,7 @@
     "css-loader": "^0.23.1",
     "elm": "^0.17.0",
     "elm-hot-loader": "^0.3.1",
-    "elm-webpack-loader": "3.0.0",
+    "elm-webpack-loader": "^3.0.3",
     "style-loader": "^0.13.1",
     "webpack": "^2.1.0-beta.7",
     "webpack-dev-server": "^2.1.0-beta.0"
