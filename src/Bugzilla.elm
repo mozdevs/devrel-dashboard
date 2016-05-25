@@ -413,7 +413,7 @@ viewBug bug =
           ]
       , div
           [ class "bug-body" ]
-          [ strong [] [ text bug.summary ] ]
+          [ a [ target "_blank", href bugUrl ] [ text bug.summary ] ]
       ]
 
 

@@ -166,6 +166,11 @@ button.active {
   border-bottom-width: 1px;
 }
 
+.bug-body a {
+  font-weight: bold;
+  color: black;
+}
+
 .bug-footer, .bug-header {
   color: #333;
 }
