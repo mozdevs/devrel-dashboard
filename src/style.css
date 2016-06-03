@@ -140,7 +140,7 @@ button.active {
 }
 
 .bug {
-  padding: 0.25em 0.5em 0.25em 1em;
+  padding: 0.25em 0.5em 0.25em 1.25em;
   border: 1px solid #999;
   border-bottom-width: 0;
   background-color: #fff;
@@ -166,7 +166,13 @@ button.active {
   border-bottom-width: 1px;
 }
 
-.bug-body a {
+.bug-id {
+  font-size: 0.75rem;
+  padding-left: .25rem;
+  opacity: 0.75;
+}
+
+.bug-summary {
   font-weight: bold;
   color: black;
 }
@@ -177,34 +183,44 @@ button.active {
 
 /* Bug Status Banners */
 
-.bug[data-status="Assigned"]::after,
-.bug[data-status="Fixed"]::after,
-.bug[data-status="WorksForMe"]::after,
-.bug[data-status="Duplicate"]::after,
-.bug[data-status="Invalid"]::after,
-.bug[data-status="Incomplete"]::after,
-.bug[data-status="WontFix"]::after {
-  content: attr(data-status);
-  width: 13em; padding: 0 0 0 3em;
-  position: absolute; right: -3.5em; top: 3em;
-  transform: rotate(45deg);
-  background-color: transparent; color: transparent; font-weight: bold; font-size: .75rem;
-  text-align: left;
-  border: 1px solid transparent;
-  opacity: 0.75;
-  pointer-events: none;
+.bug-body::before {
+  font-weight: bold;
+  font-size: .6rem;
+  border: 1px solid rgba(0, 0, 0, .5);
+  border-radius: .25em;
+  display: inline-block;
+  padding: 0 .25rem;
+  margin: 0 .25rem 0 0;
+  vertical-align: text-top;
 }
 
-.bug[data-status="Assigned"]::after   { background-color: #7f5; color: black; border-color: black; }
+.bug[data-status="Assigned"]   .bug-body::before {
+  background-color: #7f5; color: black; content: "Assigned"
+}
 
-.bug[data-status="Fixed"]::after      { background-color: #08f; color: white; border-color: black; }
-.bug[data-status="WorksForMe"]::after { background-color: #80f; color: white; border-color: black; }
-.bug[data-status="Duplicate"]::after  { background-color: #fff; color: black; border-color: black; }
+.bug[data-status="Fixed"]      .bug-body::before {
+  background-color: #08f; color: white; content: "Fixed"
+}
 
-.bug[data-status="Invalid"]::after    { background-color: #ff0; color: black; border-color: black; }
-.bug[data-status="Incomplete"]::after { background-color: #f00; color: white; border-color: black; }
+.bug[data-status="WorksForMe"] .bug-body::before {
+  background-color: #80f; color: white; content: "WorksForMe"
+}
 
-.bug[data-status="WontFix"]::after    { background-color: #555; color: white; border-color: black; }
+.bug[data-status="Duplicate"]  .bug-body::before {
+  background-color: #fff; color: black; content: "Duplicate"
+}
+
+.bug[data-status="Invalid"]    .bug-body::before {
+  background-color: #ff0; color: black; content: "Invalid"
+}
+
+.bug[data-status="Incomplete"] .bug-body::before {
+  background-color: #f00; color: white; content: "Incomplete"
+}
+
+.bug[data-status="WontFix"]    .bug-body::before {
+  background-color: #555; color: white; content: "WontFix"
+}
 
 /* Bug Priority Markers */
 
