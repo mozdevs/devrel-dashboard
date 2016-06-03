@@ -4,11 +4,19 @@ Will eventually show nice stats and summaries and such about Mozilla DevRel acti
 
 Work in progress at https://mozdevs.github.io/devrel-dashboard/
 
+## WTF is Elm?
+
+This project is written in [Elm](http://elm-lang.org/), a functional, immutable programming language that implements the best of React, Redux, TypeScript, etc. at the language level. 
+
+The syntax is a bit odd coming from languages like JavaScript, but [the docs](http://elm-lang.org/docs) are great.
+
 ## Hacking
 
 1. `npm install`
 2. `npm start`
 3. http://localhost:8080/
+
+The page should live-update as you modify and save the source. Error messages will appear in the console where you ran `npm start`.
 
 ## Contributing
 
