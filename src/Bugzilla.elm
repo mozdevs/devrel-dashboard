@@ -85,7 +85,6 @@ type Priority
 type SortField
     = Id
     | ProductComponent
-    | Status
     | Priority
 
 
@@ -219,7 +218,7 @@ view model =
                 [ input
                     [ class "filter-text"
                     , attribute "list" "datalist-products"
-                    , placeholder "Filter Bugs"
+                    , placeholder "Filter Bugs by Product, Component, or Summary Text"
                     , onInput FilterText
                     ]
                     []
@@ -247,7 +246,6 @@ view model =
                 , div []
                     ([ ( Id, "Number" )
                      , ( ProductComponent, "Product / Component" )
-                     , ( Status, "Status" )
                      , ( Priority, "Priority" )
                      ]
                         |> List.map sortWidget
@@ -375,9 +373,6 @@ sortBugs ( field, direction ) bugs =
                 ProductComponent ->
                     List.sortBy (\x -> ( x.product, x.component, x.summary ))
 
-                Status ->
-                    List.sortBy (\x -> ( statusOrd x.state, x.product, x.component, x.summary ))
-
                 Priority ->
                     List.sortBy (\x -> ( prioOrd x.priority, x.product, x.component, x.summary ))
     in
@@ -438,11 +433,13 @@ viewBug bug =
             [ div [ class "bug-header" ]
                 [ div [ class "oneline", title pcString ]
                     [ text pcString ]
-                , a [ target "_blank", href bugUrl ]
-                    [ text <| "#" ++ (toString bug.id) ]
                 ]
             , div [ class "bug-body" ]
-                [ a [ target "_blank", href bugUrl ] [ text bug.summary ] ]
+                [ a [ target "_blank", href bugUrl, class "bug-summary" ]
+                    [ text bug.summary ]
+                , a [ target "_blank", href bugUrl, class "bug-id" ]
+                    [ text <| "#" ++ (toString bug.id) ]
+                ]
             ]
 
 
