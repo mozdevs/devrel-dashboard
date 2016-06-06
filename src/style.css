@@ -136,7 +136,8 @@ button.active {
 
 .bugs {
   margin: 0 auto 5em;
-  max-width: 40em;
+  padding: 0 1em;
+  max-width: 60em;
 }
 
 .bug {
