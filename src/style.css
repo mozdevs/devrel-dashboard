@@ -3,7 +3,7 @@
 body {
   font-size: 0.9rem;
   line-height: 1.6;
-  font-family: sans-serif;
+  font-family: 'Open Sans', X-LocaleSpecific, sans-serif;
   color: #222;
   background-color: #b7cfea;
   margin: 0;
@@ -37,8 +37,8 @@ abbr {
 
 #header {
   background-color: #fff;
-  border-bottom: 1px solid red;
-  padding: 0.25em 1em;
+  padding: 0.65em 1em 0.25em;
+  box-shadow: 0px 0px 4px rgba(0,0,0,0.4);
 }
 
 #header h1 {
@@ -136,11 +136,12 @@ button.active {
 
 .bugs {
   margin: 0 auto 5em;
-  max-width: 40em;
+  padding: 0 1em;
+  max-width: 60em;
 }
 
 .bug {
-  padding: 0.25em 0.5em 0.25em 1.25em;
+  padding: 0.25em 0.5em 0.25em 1.75em;
   border: 1px solid #999;
   border-bottom-width: 0;
   background-color: #fff;
@@ -178,7 +179,7 @@ button.active {
 }
 
 .bug-footer, .bug-header {
-  color: #333;
+  color: #777;
 }
 
 /* Bug Status Banners */
@@ -233,10 +234,10 @@ button.active {
   pointer-events: none;
 }
 
-.bug[data-priority="P1"]::before        { content: "»"; color: #f00; font-size: 1.2rem; top: 1.10rem; left: 0.10rem; }
-.bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.25rem; }
-.bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.05rem; }
-.bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.25rem; }
+.bug[data-priority="P1"]::before        { content: "»"; color: #f00; font-size: 1.2rem; top: 1.10rem; left: 0.50rem; }
+.bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.65rem; }
+.bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.45rem; }
+.bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.65rem; }
 
 .priority-filter-p1::before        { content: "» "; color: #f00; }
 .priority-filter-p2::before        { content: "› "; color: #00f; }

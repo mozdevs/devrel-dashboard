@@ -37,5 +37,6 @@ npm run build &&
 git add dist &&
 git commit &&
 git push $REMOTE gh-pages:gh-pages &&
+git push $REMOTE master:master &&
 git checkout master
 ```
