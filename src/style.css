@@ -167,8 +167,14 @@ button.active {
 
 .bug-id {
   font-size: 0.75rem;
-  padding-left: .25rem;
+  padding-left: 1em;
   opacity: 0.75;
+}
+a.bug-id:link {
+  color:#0097CC;
+}
+a.bug-id:visited {
+  color:#707172;
 }
 
 .bug-summary {
