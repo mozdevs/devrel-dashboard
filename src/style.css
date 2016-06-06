@@ -158,11 +158,13 @@ button.active {
 .bug-header, .bug-footer {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  color: #888;
 }
 
 .bug-body {
   line-height: 1.3;
+  margin-top: 0.25em;
 }
 
 .bugs li:last-child .bug {
@@ -172,11 +174,12 @@ button.active {
 .bug-id {
   font-size: 0.75rem;
   padding-left: 1em;
-  opacity: 0.75;
 }
+
 a.bug-id:link {
   color:#0097CC;
 }
+
 a.bug-id:visited {
   color:#707172;
 }
@@ -184,10 +187,6 @@ a.bug-id:visited {
 .bug-summary {
   font-weight: bold;
   color: black;
-}
-
-.bug-footer, .bug-header {
-  color: #777;
 }
 
 /* Bug Status Banners */
