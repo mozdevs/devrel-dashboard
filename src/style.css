@@ -234,13 +234,13 @@ button.active {
   pointer-events: none;
 }
 
-.bug[data-priority="P1"]::before        { content: "»"; color: #f00; font-size: 1.2rem; top: 1.10rem; left: 0.50rem; }
-.bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.65rem; }
-.bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.45rem; }
-.bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.65rem; }
+.bug[data-priority="P1"]::before        { content: "»"; color: #d81c1c; font-size: 1.2rem; top: 1.10rem; left: 0.50rem; }
+.bug[data-priority="P2"]::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: 1.10rem; left: 0.65rem; }
+.bug[data-priority="PX"]::before        { content: "✕"; color: #639BBA; font-size: 1.0rem; top: 1.35rem; left: 0.45rem; }
+.bug[data-priority="Untriaged"]::before { content: "?"; color: #AC8AC8; font-size: 0.8rem; top: 1.45rem; left: 0.65rem; }
 
-.priority-filter-p1::before        { content: "» "; color: #f00; }
-.priority-filter-p2::before        { content: "› "; color: #00f; }
+.priority-filter-p1::before        { content: "» "; color: #d81c1c; }
+.priority-filter-p2::before        { content: "› "; color: #e47d0a; }
 .priority-filter-p3::before        { content: "\2004 "; color: #000; }
-.priority-filter-px::before        { content: "✕ "; color: #000; }
-.priority-filter-untriaged::before { content: "? "; color: #000; }
+.priority-filter-px::before        { content: "✕ "; color: #639bba; }
+.priority-filter-untriaged::before { content: "? "; color: #ac8ac8; }
