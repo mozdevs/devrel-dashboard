@@ -158,7 +158,8 @@ button.active {
 .bug-header, .bug-footer {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  color: #888;
 }
 
 .bug-body {
@@ -186,10 +187,6 @@ a.bug-id:visited {
 .bug-summary {
   font-weight: bold;
   color: black;
-}
-
-.bug-footer, .bug-header {
-  color: #777;
 }
 
 /* Bug Status Banners */
