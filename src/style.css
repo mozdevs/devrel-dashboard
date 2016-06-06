@@ -187,16 +187,16 @@ button.active {
 .bug-body::before {
   font-weight: bold;
   font-size: .6rem;
-  border: 1px solid rgba(0, 0, 0, .5);
+  border: 1px solid rgba(0, 0, 0, 0.38);
   border-radius: .25em;
   display: inline-block;
   padding: 0 .25rem;
-  margin: 0 .25rem 0 0;
+  margin: 2px .55rem 2px 0;
   vertical-align: text-top;
 }
 
 .bug[data-status="Assigned"]   .bug-body::before {
-  background-color: #7f5; color: black; content: "Assigned"
+  background-color: #8fd180; color: black; content: "Assigned"
 }
 
 .bug[data-status="Fixed"]      .bug-body::before {
