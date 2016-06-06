@@ -37,8 +37,8 @@ abbr {
 
 #header {
   background-color: #fff;
-  border-bottom: 1px solid red;
-  padding: 0.25em 1em;
+  padding: 0.65em 1em 0.25em;
+  box-shadow: 0px 0px 4px rgba(0,0,0,0.4);
 }
 
 #header h1 {
