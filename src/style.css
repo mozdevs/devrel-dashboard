@@ -5,7 +5,7 @@ body {
   line-height: 1.6;
   font-family: 'Open Sans', X-LocaleSpecific, sans-serif;
   color: #222;
-  background-color: #b7cfea;
+  background-color: #58CDFF;
   margin: 0;
 }
 
@@ -49,17 +49,15 @@ abbr {
 /* Sorting Bar */
 
 #sort-bar {
-  margin-top: 1em;
-  padding: 0 0.4em;
+  margin: 2em 0 1em;
+  padding: 1em 0.75em .25em;
   font-size: 0.8rem;
   display: flex;
   justify-content: space-between;
-  padding: 1em 0.75em .25em;
   flex-wrap: wrap;
   flex-direction: row-reverse;
-  margin-bottom: 1em;
-  background-color: #fea;
-  border-radius: 4px;
+  background-color: #F5EFDF;
+  box-shadow: 0px 1px 5px rgba(0,0,0,0.4);
 }
 
 #sort-bar > * {
@@ -141,9 +139,9 @@ button.active {
 }
 
 .bug {
-  padding: 0.25em 0.5em 0.25em 1.75em;
-  border: 1px solid #999;
-  border-bottom-width: 0;
+  margin: 0.5em 0;
+  padding: 0.25em 1em 0.5em 1.75em;
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
   background-color: #fff;
   position: relative;
   overflow: hidden;
@@ -187,16 +185,16 @@ button.active {
 .bug-body::before {
   font-weight: bold;
   font-size: .6rem;
-  border: 1px solid rgba(0, 0, 0, .5);
+  border: 1px solid rgba(0, 0, 0, 0.38);
   border-radius: .25em;
   display: inline-block;
   padding: 0 .25rem;
-  margin: 0 .25rem 0 0;
+  margin: 2px .55rem 2px 0;
   vertical-align: text-top;
 }
 
 .bug[data-status="Assigned"]   .bug-body::before {
-  background-color: #7f5; color: black; content: "Assigned"
+  background-color: #8fd180; color: black; content: "Assigned"
 }
 
 .bug[data-status="Fixed"]      .bug-body::before {
@@ -234,13 +232,13 @@ button.active {
   pointer-events: none;
 }
 
-.bug[data-priority="P1"]::before        { content: "»"; color: #f00; font-size: 1.2rem; top: 1.10rem; left: 0.50rem; }
-.bug[data-priority="P2"]::before        { content: "›"; color: #00f; font-size: 1.2rem; top: 1.10rem; left: 0.65rem; }
-.bug[data-priority="PX"]::before        { content: "✕"; color: #000; font-size: 1.0rem; top: 1.35rem; left: 0.45rem; }
-.bug[data-priority="Untriaged"]::before { content: "?"; color: #000; font-size: 0.8rem; top: 1.45rem; left: 0.65rem; }
+.bug[data-priority="P1"]::before        { content: "»"; color: #d81c1c; font-size: 1.2rem; top: 1.10rem; left: 0.50rem; }
+.bug[data-priority="P2"]::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: 1.10rem; left: 0.65rem; }
+.bug[data-priority="PX"]::before        { content: "✕"; color: #639BBA; font-size: 1.0rem; top: 1.35rem; left: 0.45rem; }
+.bug[data-priority="Untriaged"]::before { content: "?"; color: #AC8AC8; font-size: 0.8rem; top: 1.45rem; left: 0.65rem; }
 
-.priority-filter-p1::before        { content: "» "; color: #f00; }
-.priority-filter-p2::before        { content: "› "; color: #00f; }
+.priority-filter-p1::before        { content: "» "; color: #d81c1c; }
+.priority-filter-p2::before        { content: "› "; color: #e47d0a; }
 .priority-filter-p3::before        { content: "\2004 "; color: #000; }
-.priority-filter-px::before        { content: "✕ "; color: #000; }
-.priority-filter-untriaged::before { content: "? "; color: #000; }
+.priority-filter-px::before        { content: "✕ "; color: #639bba; }
+.priority-filter-untriaged::before { content: "? "; color: #ac8ac8; }
