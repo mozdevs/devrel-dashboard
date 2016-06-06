@@ -37,7 +37,7 @@ abbr {
 
 #header {
   background-color: #fff;
-  padding: 0.65em 1em 0.25em;
+  padding: 0.65em 1em 0.5em;
   box-shadow: 0px 0px 4px rgba(0,0,0,0.4);
 }
 
@@ -112,7 +112,7 @@ button.active {
 .loading, .loading-error, .no-bugs {
   text-align: center;
   font-weight: bold;
-  border: 1px solid #999;
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
   background-color: white;
 }
 
@@ -167,8 +167,14 @@ button.active {
 
 .bug-id {
   font-size: 0.75rem;
-  padding-left: .25rem;
+  padding-left: 1em;
   opacity: 0.75;
+}
+a.bug-id:link {
+  color:#0097CC;
+}
+a.bug-id:visited {
+  color:#707172;
 }
 
 .bug-summary {
