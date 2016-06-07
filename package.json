@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server -d --hot",
-    "build": "webpack --define process.env.NODE_ENV='\"production\"'",
+    "build": "webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dan Callahan <dan.callahan@gmail.com>",
@@ -19,7 +19,7 @@
     "elm-hot-loader": "^0.3.1",
     "elm-webpack-loader": "^3.0.3",
     "style-loader": "^0.13.1",
-    "webpack": "^2.1.0-beta.7",
+    "webpack": "^2.1.0-beta.12",
     "webpack-dev-server": "^2.1.0-beta.0"
   }
 }
