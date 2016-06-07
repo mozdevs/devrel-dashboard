@@ -1,6 +1,10 @@
 module Main exposing (..)
 
-import Bugzilla
+import Bugzilla.Commands
+import Bugzilla.Models
+import Bugzilla.Messages
+import Bugzilla.View
+import Bugzilla.Update
 import Html exposing (Html, div, text, h1)
 import Html.Attributes exposing (id)
 import Html.App
@@ -10,16 +14,15 @@ import Html.App
 
 
 type alias Model =
-    { bugs : Bugzilla.Model
+    { bugs : Bugzilla.Models.Model
     }
-
 
 
 -- UPDATE
 
 
 type Msg
-    = BugzillaMsg Bugzilla.Msg
+    = BugzillaMsg Bugzilla.Messages.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -28,10 +31,9 @@ update msg model =
         BugzillaMsg subMsg ->
             let
                 ( model', cmd ) =
-                    Bugzilla.update subMsg model.bugs
+                    Bugzilla.Update.update subMsg model.bugs
             in
                 ( { model | bugs = model' }, Cmd.map BugzillaMsg cmd )
-
 
 
 -- VIEW
@@ -43,9 +45,8 @@ view model =
         [ div [ id "header" ]
             [ h1 [] [ text "Mozilla DevRel Dashboard" ] ]
         , div [ id "content" ]
-            [ Html.App.map BugzillaMsg (Bugzilla.view model.bugs) ]
+            [ Html.App.map BugzillaMsg (Bugzilla.View.view model.bugs) ]
         ]
-
 
 
 -- SUBSCRIPTIONS
@@ -56,7 +57,6 @@ subscriptions model =
     Sub.none
 
 
-
 -- INIT
 
 
@@ -64,7 +64,7 @@ init : ( Model, Cmd Msg )
 init =
     let
         ( bugs, bugsCmd ) =
-            Bugzilla.init
+            (Bugzilla.Models.initialModel, Bugzilla.Commands.fetch)
     in
         ( Model bugs
         , Cmd.map BugzillaMsg bugsCmd
