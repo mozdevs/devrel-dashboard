@@ -140,7 +140,7 @@ button.active {
 
 .bug {
   margin: 0.5em 0;
-  padding: 0.25em 1em 0.75em 1.75em;
+  padding: 0.25em 1em 0.5em 1.75em;
   box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
   background-color: #fff;
   position: relative;
@@ -197,9 +197,9 @@ a.bug-id:visited {
   border: 1px solid rgba(0, 0, 0, 0.38);
   border-radius: .25em;
   display: inline-block;
-  padding: 0 .25rem;
+  padding: 1px .5rem 2px;
   margin: 2px .55rem 2px 0;
-  vertical-align: text-top;
+  vertical-align: middle;
 }
 
 .bug[data-status="Assigned"]   .bug-summary::before {
