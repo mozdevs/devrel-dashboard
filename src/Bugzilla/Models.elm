@@ -19,9 +19,9 @@ type alias Model =
 initialModel : Model
 initialModel =
     { bugs = Dict.empty
-    , sort = ( Priority, Asc )
+    , sort = ( ProductComponent, Asc )
     , showClosed = False
-    , visiblePriorities = [ Just P1, Just P2, Just P3 ]
+    , visiblePriorities = [ Just P1 ]
     , filterText = ""
     , networkStatus = Fetching
     }

@@ -3,7 +3,8 @@ module Bugzilla.View exposing (..)
 import Bugzilla.Models exposing (Model, Bug, Priority(..), Resolution(..), SortDir(..), SortField(..), State(..), Network(..))
 import Bugzilla.Messages exposing (Msg(..))
 import Bugzilla.ViewHelpers exposing (stateDescription, stateOrder, priorityOrder, bugTaxon)
-import Dict
+import Dict exposing (Dict)
+import Dict.Extra exposing (groupBy)
 import Html exposing (..)
 import Html.Attributes exposing (id, class, attribute, target, href, title, classList, type', checked, value, placeholder)
 import Html.Events exposing (onClick, onCheck, onInput)
@@ -37,9 +38,19 @@ view model =
 
                 Loaded ->
                     if List.isEmpty visibleBugs then
-                        div [ class "no-bugs" ] [ text "No bugs match your filter settings." ]
+                        div [ class "no-bugs" ] [ text "No bugs match your current filters." ]
                     else
-                        ul [] (List.map (\bug -> li [] [ renderBug bug ]) visibleBugs)
+                        if fst model.sort == ProductComponent then
+                           div []
+                               ( List.concatMap
+                                   (\(group, bugs) ->
+                                       h2 [] [ text group ] :: List.map renderBug bugs
+                                   )
+                                   <| (if snd model.sort == Desc then List.reverse else identity)
+                                   <| Dict.toList (groupBy .product visibleBugs)
+                               )
+                        else
+                            div [] (List.map renderBug visibleBugs)
             ]
 
 
@@ -84,10 +95,10 @@ sortBugs ( field, direction ) bugs =
                     List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, x.summary ))
 
         transform =
-            if direction == Asc then
-                identity
+            if direction == Desc || field == ProductComponent then
+               List.reverse
             else
-                List.reverse
+               identity
     in
         bugs
             |> sort
