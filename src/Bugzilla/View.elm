@@ -1,8 +1,8 @@
 module Bugzilla.View exposing (..)
 
-import Bugzilla.Models exposing (Model, Bug, Priority(..), Resolution(..), SortDir(..), SortField(..), State(..), Network(..))
+import Bugzilla.Models exposing (Model, Bug, Priority(..), Resolution(..), SortField(..), State(..), Network(..))
 import Bugzilla.Messages exposing (Msg(..))
-import Bugzilla.ViewHelpers exposing (stateDescription, stateOrder, priorityOrder, bugTaxon)
+import Bugzilla.ViewHelpers exposing (baseComponent, bugTaxon, stateDescription, stateOrder, priorityOrder)
 import Dict exposing (Dict)
 import Dict.Extra exposing (groupBy)
 import Html exposing (..)
@@ -39,18 +39,12 @@ view model =
                 Loaded ->
                     if List.isEmpty visibleBugs then
                         div [ class "no-bugs" ] [ text "No bugs match your current filters." ]
+                    else if model.sort == ProductComponent then
+                        visibleBugs
+                            |> groupBugs2 .product baseComponent
+                            |> renderNestedBugs
                     else
-                        if fst model.sort == ProductComponent then
-                           div []
-                               ( List.concatMap
-                                   (\(group, bugs) ->
-                                       h2 [] [ text group ] :: List.map renderBug bugs
-                                   )
-                                   <| (if snd model.sort == Desc then List.reverse else identity)
-                                   <| Dict.toList (groupBy .product visibleBugs)
-                               )
-                        else
-                            div [] (List.map renderBug visibleBugs)
+                        div [] (List.map renderStandaloneBug visibleBugs)
             ]
 
 
@@ -80,8 +74,8 @@ matchesShowOpen { showClosed } { open } =
 -- HELPERS : Transformations
 
 
-sortBugs : ( SortField, SortDir ) -> List Bug -> List Bug
-sortBugs ( field, direction ) bugs =
+sortBugs : SortField -> List Bug -> List Bug
+sortBugs field bugs =
     let
         sort =
             case field of
@@ -89,16 +83,13 @@ sortBugs ( field, direction ) bugs =
                     List.sortBy .id
 
                 ProductComponent ->
-                    List.sortBy (\x -> ( x.product, x.component, x.summary ))
+                    List.sortBy (\x -> ( x.product, baseComponent x, priorityOrder x.priority, String.toLower x.summary ))
 
                 Priority ->
-                    List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, x.summary ))
+                    List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, String.toLower x.summary ))
 
         transform =
-            if direction == Desc || field == ProductComponent then
-               List.reverse
-            else
-               identity
+            identity
     in
         bugs
             |> sort
@@ -109,8 +100,40 @@ sortBugs ( field, direction ) bugs =
 -- WIDGETS : Bugs
 
 
-renderBug : Bug -> Html Msg
-renderBug bug =
+groupBugs : (Bug -> String) -> List Bug -> List ( String, List Bug )
+groupBugs selector bugs =
+    Dict.Extra.groupBy selector bugs
+        |> Dict.toList
+
+
+groupBugs2 :
+    (Bug -> String)
+    -> (Bug -> String)
+    -> List Bug
+    -> List ( String, List ( String, List Bug ) )
+groupBugs2 groupSel subgroupSel bugs =
+    groupBugs groupSel bugs
+        |> List.map (\( group, bugs' ) -> ( group, groupBugs subgroupSel bugs' ))
+
+
+renderNestedBugs : List ( String, List ( String, List Bug ) ) -> Html Msg
+renderNestedBugs groups =
+    div []
+        (List.concatMap
+            (\( group, subgroups ) ->
+                h2 [] [ text group ]
+                    :: List.concatMap
+                        (\( subgroup, bugs ) ->
+                            span [] [ text subgroup ] :: List.map renderMinimalBug bugs
+                        )
+                        subgroups
+            )
+            groups
+        )
+
+
+renderStandaloneBug : Bug -> Html Msg
+renderStandaloneBug bug =
     let
         bugUrl =
             "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
@@ -129,6 +152,30 @@ renderBug bug =
                     [ text (bugTaxon bug) ]
                 ]
             , div [ class "bug-body" ]
+                [ a [ target "_blank", href bugUrl, class "bug-summary" ]
+                    [ text bug.summary ]
+                , a [ target "_blank", href bugUrl, class "bug-id" ]
+                    [ text <| "#" ++ (toString bug.id) ]
+                ]
+            ]
+
+
+renderMinimalBug : Bug -> Html Msg
+renderMinimalBug bug =
+    let
+        bugUrl =
+            "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
+
+        prioString =
+            Maybe.withDefault "Untriaged" (Maybe.map toString bug.priority)
+    in
+        div
+            [ class "bug"
+            , attribute "data-open" (toString bug.open)
+            , attribute "data-status" (stateDescription bug.state)
+            , attribute "data-priority" prioString
+            ]
+            [ div [ class "bug-body" ]
                 [ a [ target "_blank", href bugUrl, class "bug-summary" ]
                     [ text bug.summary ]
                 , a [ target "_blank", href bugUrl, class "bug-id" ]
@@ -190,9 +237,7 @@ sortWidget model ( field, label ) =
         [ onClick <| SortBy field
         , classList
             [ ( "as-text", True )
-            , ( "active", field == fst model.sort )
-            , ( "sort-asc", model.sort == ( field, Asc ) )
-            , ( "sort-desc", model.sort == ( field, Desc ) )
+            , ( "active", field == model.sort )
             ]
         ]
         [ text label ]
