@@ -8,7 +8,7 @@ import Dict exposing (Dict)
 
 type alias Model =
     { bugs : Dict Int Bug
-    , sort : ( SortField, SortDir )
+    , sort : SortField
     , showClosed : Bool
     , visiblePriorities : List (Maybe Priority)
     , filterText : String
@@ -19,7 +19,7 @@ type alias Model =
 initialModel : Model
 initialModel =
     { bugs = Dict.empty
-    , sort = ( ProductComponent, Asc )
+    , sort = ProductComponent
     , showClosed = False
     , visiblePriorities = [ Just P1 ]
     , filterText = ""
@@ -71,11 +71,6 @@ type SortField
     = Id
     | ProductComponent
     | Priority
-
-
-type SortDir
-    = Asc
-    | Desc
 
 
 type Network

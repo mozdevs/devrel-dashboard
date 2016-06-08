@@ -99,14 +99,6 @@ button.active {
   font-weight: bold;
 }
 
-.sort-asc::after {
-  content: " ▼"
-}
-
-.sort-desc::after {
-  content: " ▲"
-}
-
 /* Network messages */
 
 .loading, .loading-error, .no-bugs {

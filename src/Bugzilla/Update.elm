@@ -1,6 +1,6 @@
 module Bugzilla.Update exposing (update)
 
-import Bugzilla.Models exposing (Model, SortDir(Asc, Desc), Network(Failed, Loaded))
+import Bugzilla.Models exposing (Model, Network(Failed, Loaded))
 import Bugzilla.Messages exposing (Msg(..))
 import Set
 
@@ -15,17 +15,7 @@ update msg model =
             { model | bugs = bugs, networkStatus = Loaded }
 
         SortBy newField ->
-            let
-                ( curField, curDir ) =
-                    model.sort
-
-                newDir =
-                    if newField == curField then
-                        inverse curDir
-                    else
-                        Asc
-            in
-                { model | sort = ( newField, newDir ) }
+            { model | sort = newField }
 
         ToggleShowClosed ->
             { model | showClosed = not model.showClosed }
@@ -42,17 +32,3 @@ update msg model =
 
         FilterText s ->
             { model | filterText = s }
-
-
-
--- HELPERS
-
-
-inverse : SortDir -> SortDir
-inverse direction =
-    case direction of
-        Asc ->
-            Desc
-
-        Desc ->
-            Asc

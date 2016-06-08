@@ -1,6 +1,6 @@
 module Bugzilla.View exposing (..)
 
-import Bugzilla.Models exposing (Model, Bug, Priority(..), Resolution(..), SortDir(..), SortField(..), State(..), Network(..))
+import Bugzilla.Models exposing (Model, Bug, Priority(..), Resolution(..), SortField(..), State(..), Network(..))
 import Bugzilla.Messages exposing (Msg(..))
 import Bugzilla.ViewHelpers exposing (baseComponent, bugTaxon, stateDescription, stateOrder, priorityOrder)
 import Dict exposing (Dict)
@@ -39,7 +39,7 @@ view model =
                 Loaded ->
                     if List.isEmpty visibleBugs then
                         div [ class "no-bugs" ] [ text "No bugs match your current filters." ]
-                    else if fst model.sort == ProductComponent then
+                    else if model.sort == ProductComponent then
                         visibleBugs
                             |> groupBugs2 .product baseComponent
                             |> renderNestedBugs
@@ -74,8 +74,8 @@ matchesShowOpen { showClosed } { open } =
 -- HELPERS : Transformations
 
 
-sortBugs : ( SortField, SortDir ) -> List Bug -> List Bug
-sortBugs ( field, direction ) bugs =
+sortBugs : SortField -> List Bug -> List Bug
+sortBugs field bugs =
     let
         sort =
             case field of
@@ -83,16 +83,13 @@ sortBugs ( field, direction ) bugs =
                     List.sortBy .id
 
                 ProductComponent ->
-                    List.sortBy (\x -> ( x.product, baseComponent x, priorityOrder x.priority, x.summary ))
+                    List.sortBy (\x -> ( x.product, baseComponent x, priorityOrder x.priority, String.toLower x.summary ))
 
                 Priority ->
-                    List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, x.summary ))
+                    List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, String.toLower x.summary ))
 
         transform =
-            if direction == Desc || field == ProductComponent then
-                List.reverse
-            else
-                identity
+            identity
     in
         bugs
             |> sort
@@ -127,14 +124,7 @@ renderNestedBugs groups =
                 h2 [] [ text group ]
                     :: List.concatMap
                         (\( subgroup, bugs ) ->
-                            span [] [ text subgroup ]
-                                :: (List.map renderMinimalBug
-                                        <| List.sortBy
-                                            (\x ->
-                                                ( priorityOrder x.priority, x.summary )
-                                            )
-                                        <| bugs
-                                   )
+                            span [] [ text subgroup ] :: List.map renderMinimalBug bugs
                         )
                         subgroups
             )
@@ -247,9 +237,7 @@ sortWidget model ( field, label ) =
         [ onClick <| SortBy field
         , classList
             [ ( "as-text", True )
-            , ( "active", field == fst model.sort )
-            , ( "sort-asc", model.sort == ( field, Asc ) )
-            , ( "sort-desc", model.sort == ( field, Desc ) )
+            , ( "active", field == model.sort )
             ]
         ]
         [ text label ]
