@@ -191,7 +191,7 @@ a.bug-id:visited {
 
 /* Bug Status Banners */
 
-.bug-body::before {
+.bug-summary::before {
   font-weight: bold;
   font-size: .6rem;
   border: 1px solid rgba(0, 0, 0, 0.38);
@@ -202,49 +202,51 @@ a.bug-id:visited {
   vertical-align: text-top;
 }
 
-.bug[data-status="Assigned"]   .bug-body::before {
+.bug[data-status="Assigned"]   .bug-summary::before {
   background-color: #8fd180; color: black; content: "Assigned"
 }
 
-.bug[data-status="Fixed"]      .bug-body::before {
+.bug[data-status="Fixed"]      .bug-summary::before {
   background-color: #08f; color: white; content: "Fixed"
 }
 
-.bug[data-status="WorksForMe"] .bug-body::before {
+.bug[data-status="WorksForMe"] .bug-summary::before {
   background-color: #80f; color: white; content: "WorksForMe"
 }
 
-.bug[data-status="Duplicate"]  .bug-body::before {
+.bug[data-status="Duplicate"]  .bug-summary::before {
   background-color: #fff; color: black; content: "Duplicate"
 }
 
-.bug[data-status="Invalid"]    .bug-body::before {
+.bug[data-status="Invalid"]    .bug-summary::before {
   background-color: #ff0; color: black; content: "Invalid"
 }
 
-.bug[data-status="Incomplete"] .bug-body::before {
+.bug[data-status="Incomplete"] .bug-summary::before {
   background-color: #f00; color: white; content: "Incomplete"
 }
 
-.bug[data-status="WontFix"]    .bug-body::before {
+.bug[data-status="WontFix"]    .bug-summary::before {
   background-color: #555; color: white; content: "WontFix"
 }
 
 /* Bug Priority Markers */
 
-.bug[data-priority="P1"]::before,
-.bug[data-priority="P2"]::before,
-.bug[data-priority="P3"]::before,
-.bug[data-priority="PX"]::before,
-.bug[data-priority="Untriaged"]::before {
+.bug-body { position: relative; }
+
+.bug[data-priority="P1"] .bug-body::before,
+.bug[data-priority="P2"] .bug-body::before,
+.bug[data-priority="P3"] .bug-body::before,
+.bug[data-priority="PX"] .bug-body::before,
+.bug[data-priority="Untriaged"] .bug-body::before {
   position: absolute;
   pointer-events: none;
 }
 
-.bug[data-priority="P1"]::before        { content: "»"; color: #d81c1c; font-size: 1.2rem; top: 1.10rem; left: 0.50rem; }
-.bug[data-priority="P2"]::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: 1.10rem; left: 0.65rem; }
-.bug[data-priority="PX"]::before        { content: "✕"; color: #639BBA; font-size: 1.0rem; top: 1.35rem; left: 0.45rem; }
-.bug[data-priority="Untriaged"]::before { content: "?"; color: #AC8AC8; font-size: 0.8rem; top: 1.45rem; left: 0.65rem; }
+.bug[data-priority="P1"] .bug-body::before        { content: "»"; color: #d81c1c; font-size: 1.2rem; top: -0.30rem; left: -1.00rem; }
+.bug[data-priority="P2"] .bug-body::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: -0.25rem; left: -1.15rem; }
+.bug[data-priority="PX"] .bug-body::before        { content: "✕"; color: #639BBA; font-size: 1.0rem; top: 0;        left: -0.95rem; }
+.bug[data-priority="Untriaged"] .bug-body::before { content: "?"; color: #AC8AC8; font-size: 0.8rem; top: 0.05rem; left: -0.95rem; }
 
 .priority-filter-p1::before        { content: "» "; color: #d81c1c; }
 .priority-filter-p2::before        { content: "› "; color: #e47d0a; }
