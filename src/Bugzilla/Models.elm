@@ -21,7 +21,7 @@ initialModel =
     { bugs = Dict.empty
     , sort = ProductComponent
     , showClosed = False
-    , visiblePriorities = [ Just P1 ]
+    , visiblePriorities = [ Just P1, Just P2 ]
     , filterText = ""
     , networkStatus = Fetching
     }
