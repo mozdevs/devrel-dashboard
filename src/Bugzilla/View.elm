@@ -26,6 +26,13 @@ view model =
                 |> List.filter (matchesPriority model)
                 |> List.filter (matchesFilterText model)
                 |> sortBugs model.sort
+
+        sortGroups : List a -> List a
+        sortGroups =
+            if snd model.sort == Desc then
+                List.reverse
+            else
+                identity
     in
         div [ class "bugs" ]
             [ sortContainer model
@@ -39,18 +46,16 @@ view model =
                 Loaded ->
                     if List.isEmpty visibleBugs then
                         div [ class "no-bugs" ] [ text "No bugs match your current filters." ]
+                    else if fst model.sort == ProductComponent then
+                        div []
+                            (visibleBugs
+                                |> Dict.Extra.groupBy .product
+                                |> Dict.toList
+                                |> sortGroups
+                                |> List.concatMap renderGroup
+                            )
                     else
-                        if fst model.sort == ProductComponent then
-                           div []
-                               ( List.concatMap
-                                   (\(group, bugs) ->
-                                       h2 [] [ text group ] :: List.map renderBug bugs
-                                   )
-                                   <| (if snd model.sort == Desc then List.reverse else identity)
-                                   <| Dict.toList (groupBy .product visibleBugs)
-                               )
-                        else
-                            div [] (List.map renderBug visibleBugs)
+                        div [] (List.map renderBug visibleBugs)
             ]
 
 
@@ -96,9 +101,9 @@ sortBugs ( field, direction ) bugs =
 
         transform =
             if direction == Desc || field == ProductComponent then
-               List.reverse
+                List.reverse
             else
-               identity
+                identity
     in
         bugs
             |> sort
@@ -135,6 +140,11 @@ renderBug bug =
                     [ text <| "#" ++ (toString bug.id) ]
                 ]
             ]
+
+
+renderGroup : ( String, List Bug ) -> List (Html Msg)
+renderGroup ( group, bugs ) =
+    h2 [] [ text group ] :: List.map renderBug bugs
 
 
 
