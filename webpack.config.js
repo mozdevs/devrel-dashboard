@@ -30,13 +30,4 @@ const config = {
   },
 }
 
-if (process.env.npm_lifecycle_event === 'build') {
-  config.plugins = config.plugins || [];
-
-  config.plugins = config.plugins.concat(
-    new webpack.optimize.UglifyJsPlugin({ compress: { warnings: false } }),
-    new webpack.LoaderOptionsPlugin({ minimize: true })
-  );
-}
-
 module.exports = config;
