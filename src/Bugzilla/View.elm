@@ -55,7 +55,7 @@ view model =
                                 |> List.concatMap renderGroup
                             )
                     else
-                        div [] (List.map renderBug visibleBugs)
+                        div [] (List.map renderStandaloneBug visibleBugs)
             ]
 
 
@@ -114,8 +114,8 @@ sortBugs ( field, direction ) bugs =
 -- WIDGETS : Bugs
 
 
-renderBug : Bug -> Html Msg
-renderBug bug =
+renderStandaloneBug : Bug -> Html Msg
+renderStandaloneBug bug =
     let
         bugUrl =
             "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
@@ -142,9 +142,37 @@ renderBug bug =
             ]
 
 
+renderMinimalBug : Bug -> Html Msg
+renderMinimalBug bug =
+    let
+        bugUrl =
+            "https://bugzilla.mozilla.org/show_bug.cgi?id=" ++ (toString bug.id)
+
+        prioString =
+            Maybe.withDefault "Untriaged" (Maybe.map toString bug.priority)
+    in
+        div
+            [ class "bug"
+            , attribute "data-open" (toString bug.open)
+            , attribute "data-status" (stateDescription bug.state)
+            , attribute "data-priority" prioString
+            ]
+            [ div [ class "bug-header" ]
+                [ div [ class "oneline", title (bugTaxon bug) ]
+                    [ text bug.component ]
+                ]
+            , div [ class "bug-body" ]
+                [ a [ target "_blank", href bugUrl, class "bug-summary" ]
+                    [ text bug.summary ]
+                , a [ target "_blank", href bugUrl, class "bug-id" ]
+                    [ text <| "#" ++ (toString bug.id) ]
+                ]
+            ]
+
+
 renderGroup : ( String, List Bug ) -> List (Html Msg)
 renderGroup ( group, bugs ) =
-    h2 [] [ text group ] :: List.map renderBug bugs
+    h2 [] [ text group ] :: List.map renderMinimalBug bugs
 
 
 
