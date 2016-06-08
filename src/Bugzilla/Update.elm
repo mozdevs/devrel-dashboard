@@ -1,48 +1,58 @@
-module Bugzilla.Update exposing (..)
+module Bugzilla.Update exposing (update)
 
-import Bugzilla.Models exposing (Model, SortDir(..), Network(..))
+import Bugzilla.Models exposing (Model, SortDir(Asc, Desc), Network(Failed, Loaded))
 import Bugzilla.Messages exposing (Msg(..))
+import Set
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
     case msg of
         FetchFail _ ->
-            ( { model | networkStatus = Failed }, Cmd.none )
+            { model | networkStatus = Failed }
 
         FetchOk bugs ->
-            ( { model | bugs = bugs, networkStatus = Loaded }, Cmd.none )
+            { model | bugs = bugs, networkStatus = Loaded }
 
-        SortBy field ->
+        SortBy newField ->
             let
                 ( curField, curDir ) =
                     model.sort
 
-                toggle direction =
-                    case direction of
-                        Asc ->
-                            Desc
-
-                        Desc ->
-                            Asc
+                newDir =
+                    if newField == curField then
+                        inverse curDir
+                    else
+                        Asc
             in
-                if field == curField then
-                    ( { model | sort = ( field, toggle curDir ) }, Cmd.none )
-                else
-                    ( { model | sort = ( field, Asc ) }, Cmd.none )
+                { model | sort = ( newField, newDir ) }
 
         ToggleShowClosed ->
-            ( { model | showClosed = not model.showClosed }, Cmd.none )
+            { model | showClosed = not model.showClosed }
 
         TogglePriority priority ->
             let
                 newPriorities =
-                    if List.member priority model.showPriorities then
-                        List.filter ((/=) priority) model.showPriorities
+                    if List.member priority model.visiblePriorities then
+                        List.filter ((/=) priority) model.visiblePriorities
                     else
-                        priority :: model.showPriorities
+                        priority :: model.visiblePriorities
             in
-                ( { model | showPriorities = newPriorities }, Cmd.none )
+                { model | visiblePriorities = newPriorities }
 
         FilterText s ->
-            ( { model | filterText = s }, Cmd.none )
+            { model | filterText = s }
+
+
+
+-- HELPERS
+
+
+inverse : SortDir -> SortDir
+inverse direction =
+    case direction of
+        Asc ->
+            Desc
+
+        Desc ->
+            Asc

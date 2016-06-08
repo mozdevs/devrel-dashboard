@@ -10,7 +10,7 @@ type alias Model =
     { bugs : Dict Int Bug
     , sort : ( SortField, SortDir )
     , showClosed : Bool
-    , showPriorities : List (Maybe Priority)
+    , visiblePriorities : List (Maybe Priority)
     , filterText : String
     , networkStatus : Network
     }
@@ -21,7 +21,7 @@ initialModel =
     { bugs = Dict.empty
     , sort = ( Priority, Asc )
     , showClosed = False
-    , showPriorities = [ Just P1, Just P2, Just P3 ]
+    , visiblePriorities = [ Just P1, Just P2, Just P3 ]
     , filterText = ""
     , networkStatus = Fetching
     }

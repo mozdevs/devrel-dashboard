@@ -1,29 +1,28 @@
-module Bugzilla.Commands exposing (..)
+module Bugzilla.Commands exposing (fetch)
 
-import Bugzilla.Messages exposing (Msg(..))
-import Bugzilla.Models exposing (Bug, Priority(..), State(..), Resolution(..))
+import Bugzilla.Messages exposing (Msg(FetchFail, FetchOk))
+import Bugzilla.Models exposing (Bug, Priority(..), Resolution(..), State(..))
 import Dict exposing (Dict)
 import Http
-import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, string, maybe, object3, succeed)
+import Json.Decode exposing ((:=), Decoder, at, andThen, int, list, maybe, object3, string)
 import Json.Decode.Extra exposing ((|:), dict2)
 import Regex
 import String
-import Task
+import Task exposing (Task)
 
 
--- HTTP
+-- COMMANDS
 
 
 fetch : Cmd Msg
 fetch =
     let
+        url : String
         url =
-            Http.url
-                -- "http://localhost:3000/db"
-                "https://bugzilla.mozilla.org/rest/bug"
+            Http.url "https://bugzilla.mozilla.org/rest/bug"
                 [ ( "keywords", "DevAdvocacy" )
-                , (,) "include_fields"
-                    (String.join ","
+                , ( "include_fields"
+                  , String.join ","
                         [ "id"
                         , "summary"
                         , "status"
@@ -33,25 +32,34 @@ fetch =
                         , "component"
                         , "whiteboard"
                         ]
-                    )
+                  )
                 ]
     in
         Task.perform FetchFail FetchOk
-            <| Http.fromJson bugDecoder
-            <| Http.send Http.defaultSettings
-                { verb = "GET"
-                , headers = [ ( "Accept", "application/json" ) ]
-                , url = url
-                , body = Http.empty
-                }
+            <| getJson bzDecoder url
+
+
+
+-- HELPERS
+
+
+getJson : Decoder a -> String -> Task Http.Error a
+getJson decoder url =
+    Http.send Http.defaultSettings
+        { verb = "GET"
+        , headers = [ ( "Accept", "application/json" ) ]
+        , url = url
+        , body = Http.empty
+        }
+        |> Http.fromJson decoder
 
 
 
 -- JSON
 
 
-bugDecoder : Decoder (Dict Int Bug)
-bugDecoder =
+bzDecoder : Decoder (Dict Int Bug)
+bzDecoder =
     let
         asTuple : Bug -> ( Int, Bug )
         asTuple bug =
@@ -59,15 +67,15 @@ bugDecoder =
 
         toDict : List Bug -> Dict Int Bug
         toDict bugs =
-            Dict.fromList << List.map asTuple <| bugs
+            bugs |> List.map asTuple |> Dict.fromList
     in
-        at [ "bugs" ] (list decBug)
+        at [ "bugs" ] (list bugDecoder)
             |> Json.Decode.map toDict
 
 
-decBug : Decoder Bug
-decBug =
-    succeed Bug
+bugDecoder : Decoder Bug
+bugDecoder =
+    Json.Decode.succeed Bug
         |: ("id" := int)
         |: ("summary" := string)
         |: ("product" := string)
@@ -79,19 +87,19 @@ decBug =
                 ("resolution" := string)
                 ("dupe_of" := maybe int)
             )
-            decState
+            decodeState
         |: andThen
             -- "priority"
             ("whiteboard" := string)
-            decPrio
+            decodePriority
         |: andThen
             -- "open"
             ("status" := string)
-            decOpen
+            decodeOpen
 
 
-decState : ( String, String, Maybe Int ) -> Decoder (Maybe State)
-decState ( status, resolution, dupeOf ) =
+decodeState : ( String, String, Maybe Int ) -> Decoder (Maybe State)
+decodeState ( status, resolution, dupeOf ) =
     let
         resolution' =
             case resolution of
@@ -139,11 +147,11 @@ decState ( status, resolution, dupeOf ) =
                 _ ->
                     Nothing
     in
-        succeed state
+        Json.Decode.succeed state
 
 
-decPrio : String -> Decoder (Maybe Priority)
-decPrio whiteboard =
+decodePriority : String -> Decoder (Maybe Priority)
+decodePriority whiteboard =
     let
         pattern =
             Regex.regex "\\[devrel:p(.)\\]"
@@ -171,9 +179,9 @@ decPrio whiteboard =
                 _ ->
                     Nothing
     in
-        succeed priority
+        Json.Decode.succeed priority
 
 
-decOpen : String -> Decoder Bool
-decOpen status =
-    succeed (status /= "RESOLVED" && status /= "VERIFIED")
+decodeOpen : String -> Decoder Bool
+decodeOpen status =
+    Json.Decode.succeed (not (status == "RESOLVED" || status == "VERIFIED"))

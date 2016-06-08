@@ -1,4 +1,4 @@
-module Bugzilla.Messages exposing (..)
+module Bugzilla.Messages exposing (Msg(..))
 
 import Bugzilla.Models exposing (Bug, Priority, SortField)
 import Dict exposing (Dict)

@@ -31,10 +31,10 @@ update msg model =
     case msg of
         BugzillaMsg subMsg ->
             let
-                ( model', cmd ) =
+                model' =
                     Bugzilla.Update.update subMsg model.bugs
             in
-                ( { model | bugs = model' }, Cmd.map BugzillaMsg cmd )
+                ( { model | bugs = model' }, Cmd.none )
 
 
 
