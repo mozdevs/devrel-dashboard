@@ -244,7 +244,7 @@ a.bug-id:visited {
 }
 
 .bug[data-priority="P1"] .bug-body::before        { content: "»"; color: #d81c1c; font-size: 1.2rem; top: -0.30rem; left: -1.00rem; }
-.bug[data-priority="P2"] .bug-body::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: -0.25rem; left: -1.15rem; }
+.bug[data-priority="P2"] .bug-body::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: -0.25rem; left: -0.9rem; }
 .bug[data-priority="PX"] .bug-body::before        { content: "✕"; color: #639BBA; font-size: 1.0rem; top: 0;        left: -0.95rem; }
 .bug[data-priority="Untriaged"] .bug-body::before { content: "?"; color: #AC8AC8; font-size: 0.8rem; top: 0.05rem; left: -0.95rem; }
 

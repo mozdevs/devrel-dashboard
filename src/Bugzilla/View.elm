@@ -2,7 +2,7 @@ module Bugzilla.View exposing (..)
 
 import Bugzilla.Models exposing (Model, Bug, Priority(..), Resolution(..), SortDir(..), SortField(..), State(..), Network(..))
 import Bugzilla.Messages exposing (Msg(..))
-import Bugzilla.ViewHelpers exposing (stateDescription, stateOrder, priorityOrder, bugTaxon)
+import Bugzilla.ViewHelpers exposing (baseComponent, bugTaxon, stateDescription, stateOrder, priorityOrder)
 import Dict exposing (Dict)
 import Dict.Extra exposing (groupBy)
 import Html exposing (..)
@@ -26,13 +26,6 @@ view model =
                 |> List.filter (matchesPriority model)
                 |> List.filter (matchesFilterText model)
                 |> sortBugs model.sort
-
-        sortGroups : List a -> List a
-        sortGroups =
-            if snd model.sort == Desc then
-                List.reverse
-            else
-                identity
     in
         div [ class "bugs" ]
             [ sortContainer model
@@ -47,13 +40,9 @@ view model =
                     if List.isEmpty visibleBugs then
                         div [ class "no-bugs" ] [ text "No bugs match your current filters." ]
                     else if fst model.sort == ProductComponent then
-                        div []
-                            (visibleBugs
-                                |> Dict.Extra.groupBy .product
-                                |> Dict.toList
-                                |> sortGroups
-                                |> List.concatMap renderGroup
-                            )
+                        visibleBugs
+                            |> groupBugs2 .product baseComponent
+                            |> renderNestedBugs
                     else
                         div [] (List.map renderStandaloneBug visibleBugs)
             ]
@@ -94,7 +83,7 @@ sortBugs ( field, direction ) bugs =
                     List.sortBy .id
 
                 ProductComponent ->
-                    List.sortBy (\x -> ( x.product, x.component, x.summary ))
+                    List.sortBy (\x -> ( x.product, baseComponent x, priorityOrder x.priority, x.summary ))
 
                 Priority ->
                     List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, x.summary ))
@@ -112,6 +101,45 @@ sortBugs ( field, direction ) bugs =
 
 
 -- WIDGETS : Bugs
+
+
+groupBugs : (Bug -> String) -> List Bug -> List ( String, List Bug )
+groupBugs selector bugs =
+    Dict.Extra.groupBy selector bugs
+        |> Dict.toList
+
+
+groupBugs2 :
+    (Bug -> String)
+    -> (Bug -> String)
+    -> List Bug
+    -> List ( String, List ( String, List Bug ) )
+groupBugs2 groupSel subgroupSel bugs =
+    groupBugs groupSel bugs
+        |> List.map (\( group, bugs' ) -> ( group, groupBugs subgroupSel bugs' ))
+
+
+renderNestedBugs : List ( String, List ( String, List Bug ) ) -> Html Msg
+renderNestedBugs groups =
+    div []
+        (List.concatMap
+            (\( group, subgroups ) ->
+                h2 [] [ text group ]
+                    :: List.concatMap
+                        (\( subgroup, bugs ) ->
+                            span [] [ text subgroup ]
+                                :: (List.map renderMinimalBug
+                                        <| List.sortBy
+                                            (\x ->
+                                                ( priorityOrder x.priority, x.summary )
+                                            )
+                                        <| bugs
+                                   )
+                        )
+                        subgroups
+            )
+            groups
+        )
 
 
 renderStandaloneBug : Bug -> Html Msg
@@ -157,22 +185,13 @@ renderMinimalBug bug =
             , attribute "data-status" (stateDescription bug.state)
             , attribute "data-priority" prioString
             ]
-            [ div [ class "bug-header" ]
-                [ div [ class "oneline", title (bugTaxon bug) ]
-                    [ text bug.component ]
-                ]
-            , div [ class "bug-body" ]
+            [ div [ class "bug-body" ]
                 [ a [ target "_blank", href bugUrl, class "bug-summary" ]
                     [ text bug.summary ]
                 , a [ target "_blank", href bugUrl, class "bug-id" ]
                     [ text <| "#" ++ (toString bug.id) ]
                 ]
             ]
-
-
-renderGroup : ( String, List Bug ) -> List (Html Msg)
-renderGroup ( group, bugs ) =
-    h2 [] [ text group ] :: List.map renderMinimalBug bugs
 
 
 

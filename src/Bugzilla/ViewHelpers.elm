@@ -1,6 +1,14 @@
 module Bugzilla.ViewHelpers exposing (..)
 
 import Bugzilla.Models exposing (Bug, Priority(..), Resolution(..), State(..))
+import List
+import Maybe
+import String
+
+
+baseComponent : Bug -> String
+baseComponent =
+    .component >> String.split ":" >> List.head >> Maybe.withDefault ""
 
 
 bugTaxon : Bug -> String
