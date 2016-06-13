@@ -87,13 +87,8 @@ sortBugs field bugs =
 
                 Priority ->
                     List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, String.toLower x.summary ))
-
-        transform =
-            identity
     in
-        bugs
-            |> sort
-            |> transform
+       sort bugs
 
 
 
