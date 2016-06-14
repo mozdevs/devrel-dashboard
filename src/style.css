@@ -164,10 +164,6 @@ button.active {
   background-color: #eee;
 }
 
-.bug:hover {
-  background-color: #ffd;
-}
-
 .bug-header, .bug-footer {
   display: flex;
   justify-content: space-between;
