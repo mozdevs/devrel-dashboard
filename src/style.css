@@ -139,6 +139,27 @@ button.active {
   overflow: hidden;
 }
 
+.buggroup {
+  margin: 0.5em 0 2em 0;
+  padding: 0;
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.buggroup .bug {
+  box-shadow: none;
+  margin: 0;
+}
+
+.buggroup .grouphead {
+  margin: 0;
+  padding: 0.25em 0.5em;
+  font-weight: normal;
+  font-size: 1rem;
+  background-color: #eee;
+}
+
 .bug[data-open="False"] {
   background-color: #eee;
 }
@@ -177,7 +198,6 @@ a.bug-id:visited {
 }
 
 .bug-summary {
-  font-weight: bold;
   color: black;
 }
 
@@ -231,17 +251,15 @@ a.bug-id:visited {
 .bug[data-priority="P3"] .bug-body::before,
 .bug[data-priority="PX"] .bug-body::before,
 .bug[data-priority="Untriaged"] .bug-body::before {
-  position: absolute;
   pointer-events: none;
+  font-size: .8rem;
+  position: absolute;
+  top: 0.1rem;
+  left: -1.2rem;
 }
 
-.bug[data-priority="P1"] .bug-body::before        { content: "»"; color: #d81c1c; font-size: 1.2rem; top: -0.30rem; left: -1.00rem; }
-.bug[data-priority="P2"] .bug-body::before        { content: "›"; color: #e47d0a; font-size: 1.2rem; top: -0.25rem; left: -0.9rem; }
-.bug[data-priority="PX"] .bug-body::before        { content: "✕"; color: #639BBA; font-size: 1.0rem; top: 0;        left: -0.95rem; }
-.bug[data-priority="Untriaged"] .bug-body::before { content: "?"; color: #AC8AC8; font-size: 0.8rem; top: 0.05rem; left: -0.95rem; }
-
-.priority-filter-p1::before        { content: "» "; color: #d81c1c; }
-.priority-filter-p2::before        { content: "› "; color: #e47d0a; }
-.priority-filter-p3::before        { content: "\2004 "; color: #000; }
-.priority-filter-px::before        { content: "✕ "; color: #639bba; }
-.priority-filter-untriaged::before { content: "? "; color: #ac8ac8; }
+.bug[data-priority="P1"] .bug-body::before        { content: "P1"; color: #d81c1c; }
+.bug[data-priority="P2"] .bug-body::before        { content: "P2"; color: #e47d0a; }
+.bug[data-priority="P3"] .bug-body::before        { content: "P3"; color: #cfcd04; }
+.bug[data-priority="PX"] .bug-body::before        { content: "PX"; color: #639BBA; }
+.bug[data-priority="Untriaged"] .bug-body::before { content: "P?"; color: #AC8AC8; }
