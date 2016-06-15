@@ -87,13 +87,8 @@ sortBugs field bugs =
 
                 Priority ->
                     List.sortBy (\x -> ( priorityOrder x.priority, x.product, x.component, String.toLower x.summary ))
-
-        transform =
-            identity
     in
-        bugs
-            |> sort
-            |> transform
+       sort bugs
 
 
 
@@ -122,9 +117,13 @@ renderNestedBugs groups =
         (List.concatMap
             (\( group, subgroups ) ->
                 h2 [] [ text group ]
-                    :: List.concatMap
+                    :: List.map
                         (\( subgroup, bugs ) ->
-                            span [] [ text subgroup ] :: List.map renderMinimalBug bugs
+                            div
+                                [ class "buggroup" ]
+                                [ h3 [ class "grouphead" ] [ text subgroup ]
+                                , div [] (List.map renderMinimalBug bugs)
+                                ]
                         )
                         subgroups
             )
