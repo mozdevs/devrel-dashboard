@@ -20,7 +20,7 @@ const config = {
       {
         test: /\.elm$/,
         exclude: [/elm-stuff/, /node_modules/],
-        loader: 'elm-hot!elm-webpack?warn=true'
+        loader: 'elm-hot!elm-webpack?warn=true&pathToMake=node_modules/.bin/elm-make'
       },
       {
         test: /\.css$/,

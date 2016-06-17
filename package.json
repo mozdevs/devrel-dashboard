@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "elm package install --yes",
     "start": "webpack-dev-server -d --hot",
     "build": "webpack -p",
     "test": "echo \"Error: no test specified\" && exit 1"
