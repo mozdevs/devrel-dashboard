@@ -38,7 +38,7 @@ abbr {
 #header {
   background-color: #fff;
   padding: 0.65em 1em 0.5em;
-  box-shadow: 0px 0px 4px rgba(0,0,0,0.4);
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
 }
 
 #header h1 {
@@ -57,7 +57,7 @@ abbr {
   flex-wrap: wrap;
   flex-direction: row-reverse;
   background-color: #F5EFDF;
-  box-shadow: 0px 1px 5px rgba(0,0,0,0.4);
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
 }
 
 #sort-bar > * {
@@ -142,7 +142,7 @@ button.active {
 .buggroup {
   margin: 0.5em 0 2em 0;
   padding: 0;
-  box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
   background-color: #fff;
   overflow: hidden;
 }
